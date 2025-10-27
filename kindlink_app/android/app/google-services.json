@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "490659735787",
+    "project_id": "kindlink-d85cc",
+    "storage_bucket": "kindlink-d85cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490659735787:android:9147382afb1e333836b6ae",
+        "android_client_info": {
+          "package_name": "com.example.kindlink_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDumwqogdcStIYmgwsrdDH6jjWP18NlLnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
