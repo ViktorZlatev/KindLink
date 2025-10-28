@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
 
       // Placeholder routes (can remain for login/signup)
       routes: {
-        '/about': (context) => AboutSection(isMobile: MediaQuery.of(context).size.width < 700),
-        '/contact': (context) => ContactSection(isMobile: MediaQuery.of(context).size.width < 700),
+        '/about': (context) => const AboutSection(isMobile: false),
+        '/contact': (context) => const ContactSection(isMobile: false),
         '/login': (context) => const Placeholder(), // replace with LoginPage()
         '/signup': (context) => const Placeholder(), // replace with SignUpPage()
       },
