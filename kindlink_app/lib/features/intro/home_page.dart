@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kindlink/features/intro/navbar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -17,86 +18,10 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // NAVBAR
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 14 : 44,
-                  vertical: isMobile ? 12 : 20,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3EEE6), // Coconut dirty white
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "KindLink",
-                      style: GoogleFonts.poppins(
-                        fontSize: isMobile ? 22 : 30,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF2E2E2E),
-                        letterSpacing: -0.5,
-                      ),
-                    ),
+              // ✅ Imported reusable Navbar instead of inline code
+              Navbar(isMobile: isMobile),
 
-                    if (!isMobile)
-                      Row(
-                        children: [
-                          _navButton("Home", () {
-                            Navigator.pushNamed(context, '/');
-                          }),
-                          _navButton("About", () {
-                            Navigator.pushNamed(context, '/about');
-                          }),
-                          _navButton("Contact", () {
-                            Navigator.pushNamed(context, '/contact');
-                          }),
-                          const SizedBox(width: 28),
-                          _primaryButton(
-                            text: "Login",
-                            filled: true,
-                            onTap: () => Navigator.pushNamed(context, '/login'),
-                          ),
-                          const SizedBox(width: 12),
-                          _primaryButton(
-                            text: "Sign Up",
-                            filled: false,
-                            onTap: () => Navigator.pushNamed(context, '/signup'),
-                          ),
-                        ],
-                      )
-                    else
-                      Row(
-                        children: [
-                          _primaryButton(
-                            text: "Login",
-                            filled: true,
-                            onTap: () => Navigator.pushNamed(context, '/login'),
-                            small: true,
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: () => _showMobileMenu(context),
-                            child: const Icon(
-                              Icons.menu_rounded,
-                              size: 28,
-                              color: Color(0xFF3A3A3A),
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-
-              // HERO SECTION
+              // === HERO SECTION ===
               Container(
                 width: double.infinity,
                 constraints: const BoxConstraints(minHeight: 600),
@@ -111,7 +36,8 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -140,7 +66,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              // FEATURES SECTION
+              // === FEATURES SECTION ===
               Container(
                 color: const Color.fromARGB(255, 143, 94, 242),
                 padding: EdgeInsets.symmetric(
@@ -174,7 +100,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              // FOOTER
+              // === FOOTER ===
               Container(
                 width: double.infinity,
                 color: const Color(0xFF2E2E2E),
@@ -195,133 +121,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // === MOBILE MENU ===
-  void _showMobileMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text("Home"),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    Navigator.pushNamed(context, '/');
-                  },
-                ),
-                ListTile(
-                  title: const Text("About"),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    Navigator.pushNamed(context, '/about');
-                  },
-                ),
-                ListTile(
-                  title: const Text("Contact"),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    Navigator.pushNamed(context, '/contact');
-                  },
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/login'),
-                      child: const Text("Login"),
-                    ),
-                    const SizedBox(width: 8),
-                    OutlinedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/signup'),
-                      child: const Text("Sign Up"),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // === NAV BUTTON ===
-  Widget _navButton(String title, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0),
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 17,
-              color: const Color(0xFF4A4A4A),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // === PRIMARY BUTTON ===
-  Widget _primaryButton({
-    required String text,
-    required bool filled,
-    required VoidCallback onTap,
-    bool big = false,
-    bool small = false,
-  }) {
-    final horizontal = big ? 40.0 : (small ? 12.0 : 26.0);
-    final vertical = big ? 16.0 : (small ? 8.0 : 12.0);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
-          decoration: BoxDecoration(
-            color: filled ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
-            border:
-                Border.all(color: filled ? Colors.transparent : Colors.white, width: 2),
-            boxShadow: filled
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 10,
-                      offset: const Offset(2, 3),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(
-              color: filled ? const Color(0xFF6C63FF) : Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: big ? 18 : 15,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // === INFO CARD ===
+  // === INFO CARD (kept exactly as in your original) ===
   Widget _infoCard({
     required IconData icon,
     required String title,
