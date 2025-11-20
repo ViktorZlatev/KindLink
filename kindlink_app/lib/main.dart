@@ -13,6 +13,7 @@ import 'package:kindlink/features/auth/sign_up.dart';
 
 //home pages
 import 'package:kindlink/features/home/home.dart';
+import 'package:kindlink/features/admin/admin_home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignUpPage(),
         '/home': (context) => const Home(),
+        '/admin_home': (context) => const AdminHome(),
       },
     );
   }

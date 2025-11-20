@@ -15,7 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   bool _loading = false;
-  String? _errorMessage; // 👈 visible error at the top
+  String? _errorMessage;
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -26,15 +26,26 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+
+      // 🟥 Admin login check BEFORE Firebase sign-in
+      bool isAdmin =
+          email == "admin@gmail.com" &&
+          password == "admin123";
+
+      // 🟪 Login with Firebase
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+        email: email,
+        password: password,
       );
 
-      // If successful → go to home
+      // 🟩 Redirect
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(
+            context, isAdmin ? '/admin_home' : '/home');
       }
+
     } on FirebaseAuthException catch (e) {
       String message;
       if (e.code == 'user-not-found') {
@@ -46,8 +57,7 @@ class _LoginPageState extends State<LoginPage> {
       } else if (e.code == 'too-many-requests') {
         message = 'Too many attempts. Try again later.';
       } else {
-        // Generic fallback
-        message = 'This email is already in use or the password is incorrect.';
+        message = 'Login failed. Please check your credentials.';
       }
 
       setState(() {
@@ -92,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              // 🔙 Back arrow container
+              // Back arrow
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(
@@ -115,11 +125,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              // 🟣 Main Login content
+              // Main content
               Container(
                 width: double.infinity,
-                padding:
-                    EdgeInsets.symmetric(horizontal: isMobile ? 20 : 60, vertical: 60),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isMobile ? 20 : 60,
+                  vertical: 60,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFF0EAE2),
                 ),
@@ -135,7 +147,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // 🔴 Error banner (visible only on error)
                     if (_errorMessage != null)
                       Container(
                         width: double.infinity,
@@ -165,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                    // 🧾 Login Form
+                    // Login Form
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 20),
                       padding: const EdgeInsets.all(24),
@@ -190,9 +201,10 @@ class _LoginPageState extends State<LoginPage> {
                               validator: (v) =>
                                   v != null && v.contains('@')
                                       ? null
-                                      : "Enter valid email",
+                                      : "Enter a valid email",
                             ),
                             const SizedBox(height: 16),
+
                             TextFormField(
                               controller: passwordController,
                               obscureText: true,
@@ -203,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                                       : "Password must be 6+ chars",
                             ),
                             const SizedBox(height: 30),
+
                             GestureDetector(
                               onTap: _loading ? null : _login,
                               child: AnimatedContainer(
@@ -235,13 +248,15 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(height: 20),
+
                             TextButton(
                               onPressed: () =>
                                   Navigator.pushNamed(context, '/signup'),
                               child: Text(
                                 "Don’t have an account? Sign up",
                                 style: GoogleFonts.poppins(
-                                    color: const Color(0xFF6C63FF)),
+                                  color: const Color(0xFF6C63FF),
+                                ),
                               ),
                             ),
                           ],
