@@ -23,6 +23,9 @@ class _HomePageState extends State<Home> {
   String? username;
   bool _loading = true;
   bool _surveyCompleted = false;
+  bool _isVolunteer = false;
+  bool _volunteerNotified = false;
+
   Map<String, dynamic>? _surveyData;
 
   final Completer<GoogleMapController> _mapController =
@@ -53,14 +56,18 @@ class _HomePageState extends State<Home> {
           username = data['username'] ?? user.email;
           _surveyCompleted = data.containsKey('survey');
           _surveyData = data['survey'];
+          _isVolunteer = data['isVolunteer'] == true;
           _loading = false;
         });
-      } else {
-        setState(() {
-          username = user.email;
-          _loading = false;
-        });
-      }
+
+          if (_isVolunteer && !_volunteerNotified) {
+            Future.delayed(const Duration(milliseconds: 300), () {
+              showTopMessage(context, "🎉 You are now an approved volunteer!");
+            });
+
+            _volunteerNotified = true; 
+          } 
+       }
     } catch (e) {
       setState(() {
         username = user.email;
@@ -150,11 +157,19 @@ class _HomePageState extends State<Home> {
 
 
   void _becomeVolunteer() {
-  showVolunteerForm(
-    context,
-    onConfirm: (data) => showTopMessage(context, 'Volunteer application submitted!'),
+    if (_isVolunteer) {
+      showTopMessage(context, "You are already an approved volunteer.");
+      return;
+    }
+
+    showVolunteerForm(
+      context,
+      onConfirm: (data) {
+        showTopMessage(context, 'Volunteer application submitted!');
+      },
     );
   }
+
 
 
   void _logout() async {
@@ -222,32 +237,48 @@ class _HomePageState extends State<Home> {
                         ),
                         Row(
                           children: [
-                            ElevatedButton(
-                              onPressed: _becomeVolunteer,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFF6C63FF),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                  horizontal: 18,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  side: const BorderSide(
-                                    color: Color(0xFF6C63FF),
-                                    width: 1.2,
+                            _isVolunteer
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE6D8FF),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.volunteer_activism, color: Color(0xFF6C63FF)),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        "Volunteer",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFF6C63FF),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : ElevatedButton(
+                                  onPressed: _becomeVolunteer,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: const Color(0xFF6C63FF),
+                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      side: const BorderSide(color: Color(0xFF6C63FF), width: 1.2),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Text(
+                                    'Volunteer',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Volunteer',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
                             const SizedBox(width: 13),
                             IconButton(
                               icon: const Icon(Icons.logout,
