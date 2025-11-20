@@ -149,9 +149,8 @@ void showVolunteerForm(BuildContext context,
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () async {
-                                final user =
-                                    FirebaseAuth.instance.currentUser;
+                             onPressed: () async {
+                                final user = FirebaseAuth.instance.currentUser;
                                 if (user == null) return;
 
                                 // Upload certificate file (if selected)
@@ -159,24 +158,22 @@ void showVolunteerForm(BuildContext context,
                                   final storageRef = FirebaseStorage.instance
                                       .ref()
                                       .child(
-                                          'volunteer_docs/${user.uid}/${DateTime.now().millisecondsSinceEpoch}_${selectedFile!.path.split('/').last}');
+                                        'volunteer_docs/${user.uid}/${DateTime.now().millisecondsSinceEpoch}_${selectedFile!.path.split('/').last}',
+                                      );
                                   await storageRef.putFile(selectedFile!);
-                                  uploadedFileUrl =
-                                      await storageRef.getDownloadURL();
+                                  uploadedFileUrl = await storageRef.getDownloadURL();
                                 }
 
-                                // Prepare volunteer data
+                                // Build volunteer form data
                                 final volunteerData = {
                                   'name': nameController.text.trim(),
                                   'education': educationController.text.trim(),
-                                  'experience':
-                                      experienceController.text.trim(),
+                                  'experience': experienceController.text.trim(),
                                   'skills': skillsController.text.trim(),
-                                  'motivation':
-                                      motivationController.text.trim(),
+                                  'motivation': motivationController.text.trim(),
                                   'certificateUrl': uploadedFileUrl,
                                   'timestamp': FieldValue.serverTimestamp(),
-                                  'status': 'pending'
+                                  'status': 'pending',
                                 };
 
                                 // Save to Firestore
@@ -186,9 +183,11 @@ void showVolunteerForm(BuildContext context,
                                     .collection('volunteer_forms')
                                     .add(volunteerData);
 
+                                // Close modal and return data to parent
                                 Navigator.pop(context);
                                 onConfirm(volunteerData);
                               },
+
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF6C63FF),
                                 foregroundColor: Colors.white,

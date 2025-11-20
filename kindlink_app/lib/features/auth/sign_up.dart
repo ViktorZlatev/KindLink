@@ -16,60 +16,57 @@ class _SignUpPageState extends State<SignUpPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
   bool _loading = false;
 
- Future<void> _signUp() async {
-  if (!_formKey.currentState!.validate()) return;
-    
-  setState(() => _loading = true);
-  print("🟣 Sign up started...");
+  Future<void> _signUp() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _loading = true);
 
-  try {
-    if (passwordController.text.trim() != confirmPasswordController.text.trim()) {
-      print("❌ Passwords do not match");
+    try {
+      final username = usernameController.text.trim();
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+
+      // 🟥 Check Admin Credentials
+      bool isAdmin = 
+          username == "admin" &&
+          email == "admin@gmail.com" &&
+          password == "admin123";
+
+      // 🟪 Create Firebase User
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // 🟪 Save user data to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user!.uid)
+          .set({
+        'uid': credential.user!.uid,
+        'username': username,
+        'email': email,
+        'role': isAdmin ? "admin" : "user",
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // 🟨 Redirect: Admin → admin_home | User → home
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+            context, isAdmin ? '/admin_home' : '/home');
+      }
+    } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        SnackBar(content: Text(e.message ?? 'Sign up failed')),
       );
-      setState(() => _loading = false);
-      
-      return;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unexpected error: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
-
-    // ✅ Create user
-    final credential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
-    print("creating user");
-
-    // ✅ Save username to Firestore
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(credential.user!.uid)
-        .set({
-      'uid': credential.user!.uid,
-      'username': usernameController.text.trim(),
-      'email': emailController.text.trim(),
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-    
-    // ✅ Redirect to Home()
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/home');
-    }
-  } on FirebaseAuthException catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.message ?? 'Sign up failed')),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Unexpected error: $e')),
-    );
-  } finally {
-    if (mounted) setState(() => _loading = false);
   }
-}
 
   @override
   void dispose() {
@@ -105,7 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              // 🔙 Back arrow
+              // Back arrow
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(
@@ -128,7 +125,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
 
-              // 🟣 Sign Up header
+              // Header
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(
@@ -150,7 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // 🧾 Sign Up form card
+                    // Sign Up Card
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 20),
                       padding: const EdgeInsets.all(24),
@@ -169,7 +166,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            // 🧑 Username
                             TextFormField(
                               controller: usernameController,
                               decoration: _inputDecoration("Username"),
@@ -180,41 +176,39 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             const SizedBox(height: 16),
 
-                            // 📧 Email
                             TextFormField(
                               controller: emailController,
                               decoration: _inputDecoration("Email"),
-                              validator: (v) => v != null && v.contains('@')
-                                  ? null
-                                  : "Enter a valid email",
+                              validator: (v) =>
+                                  v != null && v.contains('@')
+                                      ? null
+                                      : "Enter a valid email",
                             ),
                             const SizedBox(height: 16),
 
-                            // 🔑 Password
                             TextFormField(
                               controller: passwordController,
                               obscureText: true,
                               decoration: _inputDecoration("Password"),
-                              validator: (v) => v != null && v.length >= 6
-                                  ? null
-                                  : "Password must be 6+ chars",
+                              validator: (v) =>
+                                  v != null && v.length >= 6
+                                      ? null
+                                      : "Password must be 6+ chars",
                             ),
                             const SizedBox(height: 16),
 
-                            // 🔁 Confirm Password
                             TextFormField(
                               controller: confirmPasswordController,
                               obscureText: true,
                               decoration:
                                   _inputDecoration("Confirm Password"),
-                              validator: (v) =>
-                                  v != null && v == passwordController.text
-                                      ? null
-                                      : "Passwords do not match",
+                              validator: (v) => v != null &&
+                                      v == passwordController.text
+                                  ? null
+                                  : "Passwords do not match",
                             ),
                             const SizedBox(height: 30),
 
-                            // 💜 Sign Up button
                             GestureDetector(
                               onTap: _loading ? null : _signUp,
                               child: AnimatedContainer(
@@ -250,7 +244,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             const SizedBox(height: 20),
 
-                            // 🔄 Redirect to login
                             TextButton(
                               onPressed: () =>
                                   Navigator.pushNamed(context, '/login'),
