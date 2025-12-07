@@ -118,6 +118,11 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
             .collection("users")
             .doc(userId)
             .update({"isVolunteer": true});
+      }else{
+        await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .update({"VolunteerStatus": "rejected"});
       }
 
       if (!mounted) return;
