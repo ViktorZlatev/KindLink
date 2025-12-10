@@ -79,22 +79,27 @@ class MapFunctions {
       Map<String, Marker> markers = {};
 
       for (var doc in snapshot.docs) {
+
         final data = doc.data() as Map<String, dynamic>;
 
         if (data["location"] == null) continue;
 
-        final loc = data["location"] as Map<String, dynamic>;
+        // Clone and modify location map
+        final loc = Map<String, dynamic>.from(data["location"]);
+
         final double? lat = (loc["lat"] as num?)?.toDouble();
         final double? lng = (loc["lng"] as num?)?.toDouble();
 
         if (lat == null || lng == null) continue;
 
+        // ✅ Add new variable directly to the location object
+        loc["isNotified"] = loc["isNotified"] ?? false;
+
         final String name = (data["username"] ?? "Volunteer").toString();
         final dynamic updatedAt = loc["updatedAt"] ?? "Unknown";
 
-        // 👇 THIS IS THE IMPORTANT PART
-        final String userId =
-            (data["uid"] as String?) ?? doc.id; // prefer 'uid' field, fallback doc.id
+        // Prefer 'uid' field, fallback to doc.id
+        final String userId = (data["uid"] as String?) ?? doc.id;
 
         final markerId = doc.id;
 
@@ -107,8 +112,6 @@ class MapFunctions {
             snippet: "Tap to see details",
           ),
           onTap: () {
-            // Debug:
-            // print("📍 Marker tapped for userId = $userId");
             onMarkerTap(
               name: name,
               lat: lat,
@@ -119,6 +122,7 @@ class MapFunctions {
           },
         );
       }
+
 
       onMarkersUpdated(markers);
     });
