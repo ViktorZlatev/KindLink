@@ -97,6 +97,7 @@ class _HomePageState extends State<Home> {
         _surveyData = data['survey'];
         _isVolunteer = data['isVolunteer'] == true;
         _volunteerStatus = data['VolunteerStatus'] ?? '';
+        _locationPopupShown = data["location"]?["isNotified"] == true;
         _loading = false;
       });
 
@@ -123,13 +124,13 @@ class _HomePageState extends State<Home> {
           );
         },
       );
-
       // ----------------------------------------------------
       // LOCATION POPUP (ONLY ONCE)
       // ----------------------------------------------------
       if (_isVolunteer && !_volunteerNotified && !_locationPopupShown) {
-        Future.delayed(const Duration(milliseconds: 600), () {
+        Future.delayed(const Duration(milliseconds: 600), () async {
           if (!mounted) return;
+
           showVolunteerLocationPermissionDialog(
             context,
             onAllow: () async {
@@ -143,10 +144,25 @@ class _HomePageState extends State<Home> {
               showTopMessage(context, "You can enable it later in settings.");
             },
           );
-        });
-        _locationPopupShown = true;
-      }
 
+          // ✅ After the popup is shown, mark it as notified both locally and in Firestore
+          _locationPopupShown = true;
+
+          try {
+            final userId = FirebaseAuth.instance.currentUser?.uid;
+            if (userId != null) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userId)
+                  .update({
+                "location.isNotified": true, // ✅ updates nested field safely
+              }); 
+            }
+          } catch (e) {
+            print("⚠️ Failed to update isNotified in Firestore: $e");
+          }
+        });
+      }
       // ----------------------------------------------------
       // REJECTED VOLUNTEER
       // ----------------------------------------------------
