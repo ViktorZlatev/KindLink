@@ -59,6 +59,29 @@ class _HomePageState extends State<Home> {
   void initState() {
     super.initState();
     _loadUserData();
+
+    mapFunctions.listenToVolunteerLocations(
+      onMarkersUpdated: (markers) {
+        if (!mounted) return;
+        setState(() {
+          _volunteerMarkers = markers;
+        });
+      },
+      onMarkerTap: ({
+        required String name,
+        required double lat,
+        required double lng,
+        required dynamic updatedAt,
+        required String userId,
+      }) {
+        showVolunteerPopupCustom(
+          context,
+          userId: userId,
+          lat: lat,
+          lng: lng,
+        );
+      },
+    );
   }
 
   @override
@@ -76,8 +99,10 @@ class _HomePageState extends State<Home> {
     if (user == null) return;
 
     try {
-      final snapshot =
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
       if (!snapshot.exists) {
         if (!mounted) return;
@@ -102,13 +127,21 @@ class _HomePageState extends State<Home> {
       });
 
       // ----------------------------------------------------
+      // ✅ ALWAYS start location updates for volunteers
+      // ----------------------------------------------------
+      if (_isVolunteer) {
+        await mapFunctions.startVolunteerLocationUpdates(
+          onError: (msg) => showTopMessage(context, msg),
+        );
+      }
+
+      // ----------------------------------------------------
       // 👇 START HELP LISTENER SYSTEM
       // ----------------------------------------------------
       _helpListener.startListening(
         isVolunteer: _isVolunteer,
         isUser: true,
         onNewRequest: (id, reqData) {
-          // VOLUNTEER RECEIVES NEW REQUEST POPUP
           showVolunteerHelpPopup(
             context,
             requestId: id,
@@ -116,7 +149,6 @@ class _HomePageState extends State<Home> {
           );
         },
         onVolunteerAccepted: (id, reqData) {
-          // USER RECEIVES “VOLUNTEER ACCEPTED” POPUP
           showAcceptedPopupUser(
             context,
             requestId: id,
@@ -124,8 +156,9 @@ class _HomePageState extends State<Home> {
           );
         },
       );
+
       // ----------------------------------------------------
-      // LOCATION POPUP (ONLY ONCE)
+      // 📍 LOCATION INFO POPUP (ONLY ONCE)
       // ----------------------------------------------------
       if (_isVolunteer && !_volunteerNotified && !_locationPopupShown) {
         Future.delayed(const Duration(milliseconds: 600), () async {
@@ -133,19 +166,15 @@ class _HomePageState extends State<Home> {
 
           showVolunteerLocationPermissionDialog(
             context,
-            onAllow: () async {
+            onAllow: () {
               showTopMessage(context, "Location sharing enabled!");
-              await mapFunctions.startVolunteerLocationUpdates(
-                onError: (msg) => showTopMessage(context, msg),
-              );
             },
             onDeny: () {
               if (!mounted) return;
-              showTopMessage(context, "You can enable it later in settings.");
+              showTopMessage(context, "Your location is now shared");
             },
           );
 
-          // ✅ After the popup is shown, mark it as notified both locally and in Firestore
           _locationPopupShown = true;
 
           try {
@@ -155,16 +184,17 @@ class _HomePageState extends State<Home> {
                   .collection("users")
                   .doc(userId)
                   .update({
-                "location.isNotified": true, // ✅ updates nested field safely
-              }); 
+                "location.isNotified": true,
+              });
             }
           } catch (e) {
             print("⚠️ Failed to update isNotified in Firestore: $e");
           }
         });
       }
+
       // ----------------------------------------------------
-      // REJECTED VOLUNTEER
+      // ❌ REJECTED VOLUNTEER MESSAGE
       // ----------------------------------------------------
       if (_volunteerStatus == "rejected" && !_volunteerNotified) {
         if (!mounted) return;
@@ -302,32 +332,11 @@ class _HomePageState extends State<Home> {
                 // MAP
                 GoogleMap(
                   initialCameraPosition: _sofiaCenter,
-                  markers: Set<Marker>.from(_volunteerMarkers.values),
+                  markers: Set<Marker>.of(_volunteerMarkers.values),
                   onMapCreated: (controller) {
                     if (!_mapController.isCompleted) {
                       _mapController.complete(controller);
                     }
-
-                    mapFunctions.listenToVolunteerLocations(
-                      onMarkersUpdated: (markers) {
-                        if (!mounted) return;
-                        setState(() => _volunteerMarkers = markers);
-                      },
-                      onMarkerTap: ({
-                        required String name,
-                        required double lat,
-                        required double lng,
-                        required dynamic updatedAt,
-                        required String userId,
-                      }) {
-                        showVolunteerPopupCustom(
-                          context,
-                          userId: userId,
-                          lat: lat,
-                          lng: lng,
-                        );
-                      },
-                    );
                   },
                   myLocationEnabled: true,
                   zoomControlsEnabled: false,
