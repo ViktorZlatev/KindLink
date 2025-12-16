@@ -16,21 +16,22 @@ class MapFunctions {
   StreamSubscription<Position>? _locationStream;
   StreamSubscription<QuerySnapshot>? _volunteerLocationStream;
 
-  // 🔥 1. START UPDATING THIS USER'S CURRENT LOCATION (Volunteer)
+  // ================================
+  // 1. START VOLUNTEER LOCATION UPDATES
+  // ================================
   Future<void> startVolunteerLocationUpdates({
     required Function(String) onError,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       onError("Please enable GPS.");
       return;
     }
 
-    LocationPermission permission = await Geolocator.checkPermission();
-
+    var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
@@ -40,31 +41,30 @@ class MapFunctions {
       return;
     }
 
-    _locationStream?.cancel();
+    await _locationStream?.cancel();
 
     _locationStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
       ),
-    ).listen((Position pos) async {
+    ).listen((pos) async {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
-          .update({
+          .set({
         "location": {
           "lat": pos.latitude,
           "lng": pos.longitude,
           "updatedAt": FieldValue.serverTimestamp(),
         }
-      });
-
-      // Debug:
-      // print("🌍 Updated Location: ${pos.latitude}, ${pos.longitude}");
+      }, SetOptions(merge: true));
     });
   }
 
-  // 🔥 2. LISTEN TO ALL VOLUNTEERS' LIVE LOCATIONS
+  // ================================
+  // 2. LISTEN TO VOLUNTEERS (LIVE)
+  // ================================
   void listenToVolunteerLocations({
     required Function(Map<String, Marker>) onMarkersUpdated,
     required MarkerTapCallback onMarkerTap,
@@ -76,37 +76,32 @@ class MapFunctions {
         .where("isVolunteer", isEqualTo: true)
         .snapshots()
         .listen((snapshot) {
-      Map<String, Marker> markers = {};
+      final Map<String, Marker> markers = {};
 
-      for (var doc in snapshot.docs) {
-
+      for (final doc in snapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
 
         if (data["location"] == null) continue;
 
-        // Clone and modify location map
         final loc = Map<String, dynamic>.from(data["location"]);
 
         final double? lat = (loc["lat"] as num?)?.toDouble();
         final double? lng = (loc["lng"] as num?)?.toDouble();
-
         if (lat == null || lng == null) continue;
 
-        // ✅ Add new variable directly to the location object
-        loc["isNotified"] = loc["isNotified"] ?? false;
+        final updatedAt = loc["updatedAt"];
+        final name = (data["username"] ?? "Volunteer").toString();
+        final userId = (data["uid"] as String?) ?? doc.id;
 
-        final String name = (data["username"] ?? "Volunteer").toString();
-        final dynamic updatedAt = loc["updatedAt"] ?? "Unknown";
-
-        // Prefer 'uid' field, fallback to doc.id
-        final String userId = (data["uid"] as String?) ?? doc.id;
-
-        final markerId = doc.id;
+        // 🔥 CRITICAL FIX: markerId MUST CHANGE when location changes
+        final markerId = '${doc.id}_${lat}_$lng';
 
         markers[markerId] = Marker(
           markerId: MarkerId(markerId),
           position: LatLng(lat, lng),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueViolet,
+          ),
           infoWindow: InfoWindow(
             title: name,
             snippet: "Tap to see details",
@@ -123,11 +118,13 @@ class MapFunctions {
         );
       }
 
-
       onMarkersUpdated(markers);
     });
   }
 
+  // ================================
+  // CLEANUP
+  // ================================
   void dispose() {
     _locationStream?.cancel();
     _volunteerLocationStream?.cancel();

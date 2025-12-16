@@ -67,31 +67,16 @@ void showVolunteerLocationPermissionDialog(
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // ❌ Deny
-                  TextButton(
+                  
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                       onDeny();
                     },
-                    child: Text(
-                      "Allow",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
 
-                  // ✅ Allow
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onAllow();
-                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C63FF),
-                      foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF8C9EFF), // 💜 light blue-purple
+                      foregroundColor: Colors.white,            // text/icon color
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22,
                         vertical: 12,
@@ -100,10 +85,30 @@ void showVolunteerLocationPermissionDialog(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
+
+                    child: Text(
+                      "Allow",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: const Color.fromARGB(255, 92, 92, 94),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  
+                  TextButton(
+                    onPressed: () {
+
+                      Navigator.pop(context);
+                      onAllow();
+                    },
+                    
                     child: Text(
                       "Deny",
                       style: GoogleFonts.poppins(
                         fontSize: 16,
+                        color: Colors.redAccent,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
