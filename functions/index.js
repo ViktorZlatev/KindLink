@@ -205,3 +205,69 @@ You MUST return EXACTLY this JSON format:
     return { ok: true, rankedCount: ranked.length };
   }
 );
+
+
+exports.rejectHelpRequest = onCall(async (request) => {
+  const { auth, data } = request;
+
+  if (!auth) {
+    throw new Error("Authentication required");
+  }
+
+  const { requestId } = data || {};
+  if (!requestId) {
+    throw new Error("requestId is required");
+  }
+
+  const userId = auth.uid;
+
+  const requestRef = db.collection("help_requests").doc(requestId);
+  const rankedRef = db.collection("volunteers").doc(requestId);
+
+  await db.runTransaction(async (tx) => {
+    const reqSnap = await tx.get(requestRef);
+    const rankedSnap = await tx.get(rankedRef);
+
+    if (!reqSnap.exists || !rankedSnap.exists) {
+      throw new Error("Request not found");
+    }
+
+    const requestData = reqSnap.data();
+    const ranked = rankedSnap.data().ranked || [];
+
+    if (requestData.status !== "awaiting_volunteer") {
+      throw new Error("Request is not awaiting a volunteer");
+    }
+
+    if (requestData.currentVolunteerId !== userId) {
+      throw new Error("You are not the assigned volunteer");
+    }
+
+    const nextIndex = (requestData.currentVolunteerIndex ?? 0) + 1;
+
+    if (nextIndex >= ranked.length) {
+      tx.update(requestRef, {
+        status: "no_volunteers",
+        currentVolunteerId: null,
+        currentVolunteerIndex: nextIndex,
+        lastResponse: "rejected",
+        lastResponderId: userId,
+        lastRespondedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return;
+    }
+
+    const nextVolunteerId = ranked[nextIndex].volunteerId;
+
+    tx.update(requestRef, {
+      currentVolunteerId: nextVolunteerId,
+      currentVolunteerIndex: nextIndex,
+      lastResponse: "rejected",
+      lastResponderId: userId,
+      lastRespondedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+
+  return { ok: true };
+});
+

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 void showVolunteerHelpPopup(
   BuildContext context, {
@@ -97,22 +98,30 @@ void showVolunteerHelpPopup(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
 
-                  // REJECT
-                  TextButton(
+                 TextButton(
                     onPressed: () async {
+                      // Close the dialog first to avoid UI deadlocks
                       Navigator.of(context, rootNavigator: true).pop();
 
-                      final v = FirebaseAuth.instance.currentUser;
-                      if (v == null) return;
+                      try {
+                        final callable =
+                            FirebaseFunctions.instance.httpsCallable('rejectHelpRequest');
 
-                      await FirebaseFirestore.instance
-                          .collection("help_requests")
-                          .doc(requestId)
-                          .update({
-                        "lastResponse": "rejected",
-                        "lastResponderId": v.uid,
-                        "lastRespondedAt": FieldValue.serverTimestamp(),
-                      });
+                        await callable.call(<String, dynamic>{
+                          'requestId': requestId,
+                        });
+
+                        // Optional: trigger local refresh / state update here if needed
+                      } on FirebaseFunctionsException catch (e) {
+                        // v2 callable errors land here
+                        debugPrint(
+                          'rejectHelpRequest failed: ${e.code} — ${e.message}',
+                        );
+
+                      } catch (e) {
+                        // Any other unexpected error
+                        debugPrint('Unexpected error rejecting request: $e');
+                      }
                     },
                     child: Text(
                       "Reject",
