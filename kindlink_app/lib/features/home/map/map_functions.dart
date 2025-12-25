@@ -13,13 +13,15 @@ typedef MarkerTapCallback = void Function({
 });
 
 class MapFunctions {
-  StreamSubscription<Position>? _locationStream;
+  StreamSubscription<Position>? _liveLocationStream;
   StreamSubscription<QuerySnapshot>? _volunteerLocationStream;
 
-  // ================================
-  // 1. START VOLUNTEER LOCATION UPDATES
-  // ================================
-  Future<void> startVolunteerLocationUpdates({
+  bool _isStreaming = false;
+
+  // =====================================
+  // 1️⃣ SAVE SINGLE LOCATION (ALL USERS)
+  // =====================================
+  Future<void> saveSingleLocation({
     required Function(String) onError,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -31,7 +33,7 @@ class MapFunctions {
       return;
     }
 
-    var permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
@@ -41,18 +43,63 @@ class MapFunctions {
       return;
     }
 
-    await _locationStream?.cancel();
+    final pos = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
-    _locationStream = Geolocator.getPositionStream(
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
+      "location": {
+        "lat": pos.latitude,
+        "lng": pos.longitude,
+        "updatedAt": FieldValue.serverTimestamp(),
+      }
+    }, SetOptions(merge: true));
+  }
+
+  // =====================================
+  // 2️⃣ START LIVE LOCATION (VOLUNTEERS)
+  // =====================================
+  Future<void> startVolunteerLocationUpdates({
+    required Function(String) onError,
+  }) async {
+    if (_isStreaming) return;
+    _isStreaming = true;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      _isStreaming = false;
+      return;
+    }
+
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _isStreaming = false;
+      onError("Please enable GPS.");
+      return;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission != LocationPermission.always &&
+        permission != LocationPermission.whileInUse) {
+      _isStreaming = false;
+      onError("Location permission required.");
+      return;
+    }
+
+    await _liveLocationStream?.cancel();
+
+    _liveLocationStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
       ),
     ).listen((pos) async {
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid)
-          .set({
+      await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
         "location": {
           "lat": pos.latitude,
           "lng": pos.longitude,
@@ -62,9 +109,18 @@ class MapFunctions {
     });
   }
 
-  // ================================
-  // 2. LISTEN TO VOLUNTEERS (LIVE)
-  // ================================
+  // =====================================
+  // 3️⃣ STOP LIVE LOCATION
+  // =====================================
+  Future<void> stopVolunteerLocationUpdates() async {
+    _isStreaming = false;
+    await _liveLocationStream?.cancel();
+    _liveLocationStream = null;
+  }
+
+  // =====================================
+  // 4️⃣ LISTEN TO VOLUNTEER MARKERS
+  // =====================================
   void listenToVolunteerLocations({
     required Function(Map<String, Marker>) onMarkersUpdated,
     required MarkerTapCallback onMarkerTap,
@@ -79,22 +135,15 @@ class MapFunctions {
       final Map<String, Marker> markers = {};
 
       for (final doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
+        final loc = data["location"];
+        if (loc == null) continue;
 
-        if (data["location"] == null) continue;
-
-        final loc = Map<String, dynamic>.from(data["location"]);
-
-        final double? lat = (loc["lat"] as num?)?.toDouble();
-        final double? lng = (loc["lng"] as num?)?.toDouble();
+        final lat = (loc["lat"] as num?)?.toDouble();
+        final lng = (loc["lng"] as num?)?.toDouble();
         if (lat == null || lng == null) continue;
 
-        final updatedAt = loc["updatedAt"];
-        final name = (data["username"] ?? "Volunteer").toString();
-        final userId = (data["uid"] as String?) ?? doc.id;
-
-        // 🔥 CRITICAL FIX: markerId MUST CHANGE when location changes
-        final markerId = '${doc.id}_${lat}_$lng';
+        final markerId = "${doc.id}_${lat}_${lng}";
 
         markers[markerId] = Marker(
           markerId: MarkerId(markerId),
@@ -102,17 +151,13 @@ class MapFunctions {
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueViolet,
           ),
-          infoWindow: InfoWindow(
-            title: name,
-            snippet: "Tap to see details",
-          ),
           onTap: () {
             onMarkerTap(
-              name: name,
+              name: data["username"] ?? "Volunteer",
               lat: lat,
               lng: lng,
-              updatedAt: updatedAt,
-              userId: userId,
+              updatedAt: loc["updatedAt"],
+              userId: doc.id,
             );
           },
         );
@@ -122,11 +167,9 @@ class MapFunctions {
     });
   }
 
-  // ================================
-  // CLEANUP
-  // ================================
   void dispose() {
-    _locationStream?.cancel();
+    _isStreaming = false;
+    _liveLocationStream?.cancel();
     _volunteerLocationStream?.cancel();
   }
 }

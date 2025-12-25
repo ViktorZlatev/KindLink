@@ -8,7 +8,7 @@ void showVolunteerHelpPopup(
   required String requestId,
   required Map<String, dynamic> data,
 }) {
-  final volunteer = FirebaseAuth.instance.currentUser;
+  //final volunteer = FirebaseAuth.instance.currentUser;
 
   final requesterName = data["username"] ?? "Someone";
   final status = data["status"] ?? "open";
@@ -99,8 +99,20 @@ void showVolunteerHelpPopup(
 
                   // REJECT
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.of(context, rootNavigator: true).pop();
+
+                      final v = FirebaseAuth.instance.currentUser;
+                      if (v == null) return;
+
+                      await FirebaseFirestore.instance
+                          .collection("help_requests")
+                          .doc(requestId)
+                          .update({
+                        "lastResponse": "rejected",
+                        "lastResponderId": v.uid,
+                        "lastRespondedAt": FieldValue.serverTimestamp(),
+                      });
                     },
                     child: Text(
                       "Reject",
@@ -117,6 +129,9 @@ void showVolunteerHelpPopup(
                     onPressed: () async {
                       Navigator.of(context, rootNavigator: true).pop();
 
+                      final v = FirebaseAuth.instance.currentUser;
+                      if (v == null) return;
+
                       final doc = await FirebaseFirestore.instance
                           .collection("help_requests")
                           .doc(requestId)
@@ -124,20 +139,20 @@ void showVolunteerHelpPopup(
 
                       if (!doc.exists) return;
 
-                      if (doc.data()!["status"] != "open") return;
+                      final data = doc.data()!;
+                      if (data["status"] != "awaiting_volunteer") return;
+                      if (data["currentVolunteerId"] != v.uid) return; // ✅ only assigned volunteer can accept
 
                       await FirebaseFirestore.instance
                           .collection("help_requests")
                           .doc(requestId)
                           .update({
                         "status": "pending",
-                        "volunteerId": volunteer?.uid,
-                        "volunteerName":
-                            volunteer?.email ?? "Volunteer",
+                        "volunteerId": v.uid,
+                        "volunteerName": v.email ?? "Volunteer",
                         "acceptedAt": FieldValue.serverTimestamp(),
                       });
                     },
-
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF6C63FF),
                       foregroundColor: Colors.white,
@@ -146,7 +161,6 @@ void showVolunteerHelpPopup(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-
                     child: Text(
                       "Accept",
                       style: GoogleFonts.poppins(
@@ -154,7 +168,7 @@ void showVolunteerHelpPopup(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
