@@ -15,7 +15,6 @@ import 'popups/popup.dart';
 import 'popups/volunteer_popup.dart';
 import 'popups/location.dart';
 import 'popups/help_popup.dart';
-import 'user_location.dart';
 
 // features
 import 'survey.dart';
@@ -161,30 +160,20 @@ class _HomePageState extends State<Home> {
       // ----------------------------------------------------
       // 📍 LOCATION INFO POPUP (ONLY ONCE)
       // ----------------------------------------------------
-      if (!_volunteerNotified && !_locationPopupShown) {
+      if (_isVolunteer && !_volunteerNotified && !_locationPopupShown) {
         Future.delayed(const Duration(milliseconds: 600), () async {
           if (!mounted) return;
 
-          showLocationPermissionDialog(
+          showVolunteerLocationPermissionDialog(
             context,
-            isVolunteer: _isVolunteer,
-            onAllow: () async {
-              if (_isVolunteer) {
-                mapFunctions.startVolunteerLocationUpdates(
-                  onError: (e) => showTopMessage(context, e),
-                );
-              } else {
-                 await LocationService.saveUserLocationOnce(
-                  onError: (e) => showTopMessage(context, e),
-                  );
-              }
+            onAllow: () {
+              showTopMessage(context, "Location sharing enabled!");
             },
             onDeny: () {
-              showTopMessage(context, "Location permission denied");
+              if (!mounted) return;
+              showTopMessage(context, "Your location is now shared");
             },
           );
-
-
 
           _locationPopupShown = true;
 
@@ -321,7 +310,6 @@ class _HomePageState extends State<Home> {
   // LOGOUT
   // --------------------------------------------------------
   void _logout() async {
-    await mapFunctions.stopVolunteerLocationUpdates(); 
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/login');

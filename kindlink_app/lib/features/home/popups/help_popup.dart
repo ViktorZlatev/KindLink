@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 
 void showVolunteerHelpPopup(
   BuildContext context, {
   required String requestId,
   required Map<String, dynamic> data,
 }) {
-  //final volunteer = FirebaseAuth.instance.currentUser;
+  final volunteer = FirebaseAuth.instance.currentUser;
 
   final requesterName = data["username"] ?? "Someone";
   final status = data["status"] ?? "open";
@@ -98,30 +97,10 @@ void showVolunteerHelpPopup(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
 
-                 TextButton(
-                    onPressed: () async {
-                      // Close the dialog first to avoid UI deadlocks
+                  // REJECT
+                  TextButton(
+                    onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
-
-                      try {
-                        final callable =
-                            FirebaseFunctions.instance.httpsCallable('rejectHelpRequest');
-
-                        await callable.call(<String, dynamic>{
-                          'requestId': requestId,
-                        });
-
-                        // Optional: trigger local refresh / state update here if needed
-                      } on FirebaseFunctionsException catch (e) {
-                        // v2 callable errors land here
-                        debugPrint(
-                          'rejectHelpRequest failed: ${e.code} — ${e.message}',
-                        );
-
-                      } catch (e) {
-                        // Any other unexpected error
-                        debugPrint('Unexpected error rejecting request: $e');
-                      }
                     },
                     child: Text(
                       "Reject",
@@ -138,9 +117,6 @@ void showVolunteerHelpPopup(
                     onPressed: () async {
                       Navigator.of(context, rootNavigator: true).pop();
 
-                      final v = FirebaseAuth.instance.currentUser;
-                      if (v == null) return;
-
                       final doc = await FirebaseFirestore.instance
                           .collection("help_requests")
                           .doc(requestId)
@@ -148,20 +124,20 @@ void showVolunteerHelpPopup(
 
                       if (!doc.exists) return;
 
-                      final data = doc.data()!;
-                      if (data["status"] != "awaiting_volunteer") return;
-                      if (data["currentVolunteerId"] != v.uid) return; // ✅ only assigned volunteer can accept
+                      if (doc.data()!["status"] != "open") return;
 
                       await FirebaseFirestore.instance
                           .collection("help_requests")
                           .doc(requestId)
                           .update({
                         "status": "pending",
-                        "volunteerId": v.uid,
-                        "volunteerName": v.email ?? "Volunteer",
+                        "volunteerId": volunteer?.uid,
+                        "volunteerName":
+                            volunteer?.email ?? "Volunteer",
                         "acceptedAt": FieldValue.serverTimestamp(),
                       });
                     },
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF6C63FF),
                       foregroundColor: Colors.white,
@@ -170,6 +146,7 @@ void showVolunteerHelpPopup(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
+
                     child: Text(
                       "Accept",
                       style: GoogleFonts.poppins(
@@ -177,7 +154,7 @@ void showVolunteerHelpPopup(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ],
