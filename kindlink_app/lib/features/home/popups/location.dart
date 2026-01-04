@@ -71,7 +71,7 @@ void showVolunteerLocationPermissionDialog(
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      onDeny();
+                      onAllow();
                     },
 
                     style: ElevatedButton.styleFrom(
@@ -101,7 +101,7 @@ void showVolunteerLocationPermissionDialog(
                     onPressed: () {
 
                       Navigator.pop(context);
-                      onAllow();
+                      onDeny();
                     },
                     
                     child: Text(

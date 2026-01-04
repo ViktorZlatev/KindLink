@@ -117,7 +117,10 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
         await FirebaseFirestore.instance
             .collection("users")
             .doc(userId)
-            .update({"isVolunteer": true});
+            .update({
+              "isVolunteer": true, 
+              "VolunteerStatus": "approved"
+            });
       }else{
         await FirebaseFirestore.instance
         .collection("users")
