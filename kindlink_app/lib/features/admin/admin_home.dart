@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'admin_volunteers.dart';
+import 'admin_requests.dart';
 
 class AdminHome extends StatefulWidget {
   const AdminHome({super.key});
@@ -238,7 +239,7 @@ class _AdminHomeState extends State<AdminHome> {
                         _buildActionButton(
                           "View SOS Alerts",
                           Icons.emergency_share,
-                          () => Navigator.pushNamed(context, '/admin_sos'),
+                          () => DisplayHelpRequests(context),
                         ),
                       ],
                     ),
