@@ -9,8 +9,18 @@ class HelpListenerService {
   void startListening({
     required bool isVolunteer,
     required bool isUser,
-    required void Function(String id, Map<String, dynamic> data) onNewRequest,
-    required void Function(String id, Map<String, dynamic> data) onVolunteerAccepted,
+
+    // 🔔 Volunteer sees a new request (awaiting_volunteer)
+    required void Function(String requestId, Map<String, dynamic> data)
+        onNewRequest,
+
+    // ✅ Volunteer sees that THEIR help was accepted
+    required void Function(String requestId, Map<String, dynamic> data)
+        onVolunteerHelpAccepted,
+
+    // 👤 User sees a volunteer response (pending)
+    required void Function(String requestId, Map<String, dynamic> data)
+        onVolunteerPendingForUser,
   }) {
     _sub?.cancel();
 
@@ -18,32 +28,59 @@ class HelpListenerService {
     if (currentUser == null) return;
 
     // ---------------------------------------------
-    // VOLUNTEER: listen only to requests assigned to them
+    // VOLUNTEER LISTENER
     // ---------------------------------------------
     if (isVolunteer) {
       _sub = FirebaseFirestore.instance
           .collection("help_requests")
-          .where("status", isEqualTo: "awaiting_volunteer")
+          .where(
+            "status",
+            whereIn: ["awaiting_volunteer", "accepted"],
+          )
           .where("currentVolunteerId", isEqualTo: currentUser.uid)
           .snapshots()
           .listen((snapshot) {
         for (final change in snapshot.docChanges) {
-          if (change.type == DocumentChangeType.added ||
-              change.type == DocumentChangeType.modified) {
-            final doc = change.doc;
-            final data = doc.data() ?? <String, dynamic>{};
+          if (change.type != DocumentChangeType.added &&
+              change.type != DocumentChangeType.modified) {
+            continue;
+          }
+
+          final doc = change.doc;
+          final data = doc.data() ?? <String, dynamic>{};
+          final status = data["status"];
+
+          // 🔔 New help request offered to volunteer
+          if (status == "awaiting_volunteer") {
             onNewRequest(doc.id, data);
+            continue;
+          }
+
+          // ✅ Volunteer was accepted (fire ONCE)
+          if (status == "accepted" &&
+              data["acceptedVolunteerId"] == currentUser.uid &&
+              data["volunteerNotified"] != true) {
+            // 🔔 Notify volunteer UI
+            onVolunteerHelpAccepted(doc.id, data);
+
+            // 🧷 Mark as notified to prevent duplicate popups
+            FirebaseFirestore.instance
+                .collection("help_requests")
+                .doc(doc.id)
+                .update({
+              "volunteerNotified": true,
+            });
           }
         }
       }, onError: (e) {
-        debugPrint("HelpListener error: $e");
+        debugPrint("HelpListener (volunteer) error: $e");
       });
 
       return;
     }
 
     // ---------------------------------------------
-    // REQUESTER: see when their request becomes pending (accepted)
+    // REQUESTER LISTENER
     // ---------------------------------------------
     if (isUser) {
       _sub = FirebaseFirestore.instance
@@ -53,18 +90,27 @@ class HelpListenerService {
           .snapshots()
           .listen((snapshot) {
         for (final change in snapshot.docChanges) {
+          if (change.type != DocumentChangeType.added &&
+              change.type != DocumentChangeType.modified) {
+            continue;
+          }
+
           final doc = change.doc;
           final data = doc.data() ?? <String, dynamic>{};
 
+          // 👤 User sees volunteer response (pending)
           if (data["status"] == "pending") {
-            onVolunteerAccepted(doc.id, data);
+            onVolunteerPendingForUser(doc.id, data);
           }
         }
       }, onError: (e) {
-        debugPrint("HelpListener error: $e");
+        debugPrint("HelpListener (user) error: $e");
       });
     }
   }
 
-  void dispose() => _sub?.cancel();
+  void dispose() {
+    _sub?.cancel();
+    _sub = null;
+  }
 }

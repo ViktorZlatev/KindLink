@@ -24,6 +24,7 @@ import 'volunteer.dart';
 import 'help.dart';
 import 'help_listener.dart';
 import 'popups/accept_popup.dart';
+import 'popups/volunteer_accept_popup.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -139,17 +140,31 @@ class _HomePageState extends State<Home> {
       // ----------------------------------------------------
       // 👇 START HELP LISTENER SYSTEM
       // ----------------------------------------------------
+      
       _helpListener.startListening(
         isVolunteer: _isVolunteer,
-        isUser: true,
+        isUser: !_isVolunteer, // ✅ user mode only when NOT volunteer
+
         onNewRequest: (id, reqData) {
+          // Volunteer gets a new request (awaiting_volunteer)
           showVolunteerHelpPopup(
             context,
             requestId: id,
             data: reqData,
           );
         },
-        onVolunteerAccepted: (id, reqData) {
+
+        onVolunteerHelpAccepted: (id, reqData) {
+          // Volunteer gets accepted popup
+          showVolunteerAcceptedPopup(
+            context,
+            requestId: id,
+            data: reqData,
+          );
+        },
+
+        onVolunteerPendingForUser: (id, reqData) {
+          // Requester sees pending volunteer offer popup
           showAcceptedPopupUser(
             context,
             requestId: id,
