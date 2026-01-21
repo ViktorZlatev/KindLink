@@ -25,6 +25,8 @@ import 'help.dart';
 import 'help_listener.dart';
 import 'popups/accept_popup.dart';
 import 'popups/volunteer_accept_popup.dart';
+import 'active_request_listener.dart';
+import 'resolving_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -41,11 +43,14 @@ class _HomePageState extends State<Home> {
   bool _volunteerNotified = false;
   String _volunteerStatus = "";
   bool _locationPopupShown = false;
+  String? _activeRequestId;
+  String? _activeRequestStatus; // open | accepted | resolved
 
   Map<String, Marker> _volunteerMarkers = {};
 
   final MapFunctions mapFunctions = MapFunctions();
   final HelpListenerService _helpListener = HelpListenerService();
+  final _activeRequestListener = ActiveHelpRequestListener();
 
   Map<String, dynamic>? _surveyData;
 
@@ -84,12 +89,23 @@ class _HomePageState extends State<Home> {
         );
       },
     );
+
+    _activeRequestListener.start(
+      onChanged: ({String? requestId, String? status}) {
+        if (!mounted) return;
+        setState(() {
+          _activeRequestId = requestId;
+          _activeRequestStatus = status;
+        });
+      },
+    );
   }
 
   @override
   void dispose() {
     mapFunctions.dispose();
     _helpListener.dispose();
+    _activeRequestListener.dispose();
     super.dispose();
   }
 
@@ -393,6 +409,7 @@ class _HomePageState extends State<Home> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // 👋 Greeting
                         Text(
                           'Hello, ${username ?? 'User'}!',
                           style: GoogleFonts.poppins(
@@ -401,8 +418,56 @@ class _HomePageState extends State<Home> {
                             color: const Color(0xFF6C63FF),
                           ),
                         ),
+
+                        // 🔧 Actions
                         Row(
                           children: [
+
+                            // ✅ CLOSE HELP REQUEST (only when ACTIVE & ACCEPTED)
+                            if (_activeRequestId != null &&
+                              (_activeRequestStatus == "accepted" ||
+                              _activeRequestStatus == "closed_once"))
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await closeHelpRequest(
+                                      requestId: _activeRequestId!,
+                                      isVolunteer: _isVolunteer,
+                                    );
+
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Marked as completed. Waiting for the other participant.",
+                                          ),
+                                          backgroundColor: Color(0xFF6C63FF),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  icon: const Icon(Icons.check_circle_outline),
+                                  label: Text(
+                                    "Close Help",
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF6C63FF),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    elevation: 4,
+                                  ),
+                                ),
+                              ),
+
+                            // 🧑‍⚕️ Volunteer badge OR Become Volunteer
                             _isVolunteer
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(
@@ -413,8 +478,10 @@ class _HomePageState extends State<Home> {
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.volunteer_activism,
-                                            color: Color(0xFF6C63FF)),
+                                        const Icon(
+                                          Icons.volunteer_activism,
+                                          color: Color(0xFF6C63FF),
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           "Volunteer",
@@ -449,10 +516,15 @@ class _HomePageState extends State<Home> {
                                       ),
                                     ),
                                   ),
+
                             const SizedBox(width: 13),
+
+                            // 🚪 Logout
                             IconButton(
-                              icon: const Icon(Icons.logout,
-                                  color: Color(0xFF6C63FF)),
+                              icon: const Icon(
+                                Icons.logout,
+                                color: Color(0xFF6C63FF),
+                              ),
                               tooltip: 'Logout',
                               onPressed: _logout,
                             ),
@@ -462,6 +534,7 @@ class _HomePageState extends State<Home> {
                     ),
                   ),
                 ),
+            
 
                 // --------------------
                 // BOTTOM BUTTONS
