@@ -411,11 +411,11 @@ class _HomePageState extends State<Home> {
                       children: [
                         // 👋 Greeting
                         Text(
-                          'Hello, ${username ?? 'User'}!',
+                          username ?? 'User',
                           style: GoogleFonts.poppins(
                             fontSize: isMobile ? 20 : 24,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF6C63FF),
+                            color: const Color.fromARGB(255, 47, 43, 114),
                           ),
                         ),
 
@@ -436,7 +436,25 @@ class _HomePageState extends State<Home> {
                                       isVolunteer: _isVolunteer,
                                     );
 
-                                    if (context.mounted) {
+                                    final snap = await FirebaseFirestore.instance
+                                        .collection("help_requests")
+                                        .doc(_activeRequestId!)
+                                        .get();
+
+                                    if (!snap.exists || !context.mounted) return;
+
+                                    final status = snap.data()?["status"];
+                                    
+                                    if (status == "resolved") {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("The help request is resolved!"),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                    
+                                    else {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text(
@@ -449,7 +467,7 @@ class _HomePageState extends State<Home> {
                                   },
                                   icon: const Icon(Icons.check_circle_outline),
                                   label: Text(
-                                    "Close Help",
+                                    "Close",
                                     style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -471,7 +489,7 @@ class _HomePageState extends State<Home> {
                             _isVolunteer
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
+                                        horizontal: 14, vertical: 7),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFE6D8FF),
                                       borderRadius: BorderRadius.circular(30),
@@ -486,7 +504,7 @@ class _HomePageState extends State<Home> {
                                         Text(
                                           "Volunteer",
                                           style: GoogleFonts.poppins(
-                                            fontSize: 17,
+                                            fontSize: 15,
                                             fontWeight: FontWeight.w600,
                                             color: const Color(0xFF6C63FF),
                                           ),
@@ -500,7 +518,7 @@ class _HomePageState extends State<Home> {
                                       backgroundColor: Colors.white,
                                       foregroundColor: const Color(0xFF6C63FF),
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 18),
+                                          vertical: 10, horizontal: 16),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(30),
                                         side: const BorderSide(
@@ -511,7 +529,7 @@ class _HomePageState extends State<Home> {
                                     child: Text(
                                       'Volunteer',
                                       style: GoogleFonts.poppins(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),

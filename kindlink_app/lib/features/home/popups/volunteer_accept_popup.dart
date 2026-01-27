@@ -8,6 +8,10 @@ void showVolunteerAcceptedPopup(
 }) {
   final requesterName = data["username"] ?? "The requester";
 
+  final location = data["location"] as Map<String, dynamic>?;
+  final lat = location?["lat"];
+  final lng = location?["lng"];
+
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -53,16 +57,32 @@ void showVolunteerAcceptedPopup(
                 textAlign: TextAlign.center,
               ),
 
+              const SizedBox(height: 20),
+
+              if (lat != null && lng != null)
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF6F0),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF6C63FF).withOpacity(0.15),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      _row(Icons.location_on, "Latitude: $lat"),
+                      const SizedBox(height: 6),
+                      _row(Icons.location_on_outlined, "Longitude: $lng"),
+                    ],
+                  ),
+                ),
+
               const SizedBox(height: 28),
 
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
-
-                  // 👉 OPTIONAL NEXT STEP:
-                  // Navigate to map / chat / request details
-                  // Example:
-                  // Navigator.pushNamed(context, '/active_request', arguments: requestId);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6C63FF),
@@ -88,5 +108,23 @@ void showVolunteerAcceptedPopup(
         ),
       );
     },
+  );
+}
+
+Widget _row(IconData icon, String text) {
+  return Row(
+    children: [
+      Icon(icon, color: const Color(0xFF6C63FF)),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    ],
   );
 }

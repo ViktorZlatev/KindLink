@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'pn_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,6 +40,8 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
         password: password,
       );
+
+      await PushNotificationService.initAndSaveToken();
 
       // 🟩 Redirect
       if (mounted) {
