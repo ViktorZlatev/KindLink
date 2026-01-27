@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const OpenAI = require("openai");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 
 // v2 imports (REQUIRED for secrets)
 const { onCall } = require("firebase-functions/v2/https");
@@ -206,6 +207,7 @@ You MUST return EXACTLY this JSON format:
   }
 );
 
+// reject function
 
 exports.rejectHelpRequest = onCall(async (request) => {
   const { auth, data } = request;
@@ -271,3 +273,80 @@ exports.rejectHelpRequest = onCall(async (request) => {
   return { ok: true };
 });
 
+// push notification function
+
+exports.notifyAssignedVolunteer = onDocumentUpdated(
+    {
+      document: "help_requests/{requestId}",
+      region: "us-central1",
+    },
+    async (event) => {
+    
+    const beforeSnap = event.data?.before;
+    const afterSnap = event.data?.after;
+
+    if (!beforeSnap?.exists || !afterSnap?.exists) {
+      return;
+    }
+
+    const before = beforeSnap.data();
+    const after = afterSnap.data();
+
+    if (
+      before.currentVolunteerId === after.currentVolunteerId ||
+      !after.currentVolunteerId ||
+      after.status !== "awaiting_volunteer"
+    ) {
+      return;
+    }
+
+    const volunteerId = after.currentVolunteerId;
+    const requestId = event.params.requestId;
+
+    const volunteerSnap = await db.collection("users").doc(volunteerId).get();
+    if (!volunteerSnap.exists) {
+      console.log("Volunteer user not found:", volunteerId);
+      return;
+    }
+
+    const volunteerData = volunteerSnap.data() || {};
+    const fcmToken = volunteerData.fcmToken;
+
+    if (!fcmToken) {
+      console.log("No FCM token for volunteer:", volunteerId);
+      return;
+    }
+
+    const payload = {
+      token: fcmToken,
+      notification: {
+        title: "Emergency Assistance Needed",
+        body: "A nearby user requires immediate help. Tap to respond.",
+      },
+      data: {
+        type: "HELP_REQUEST",
+        requestId: requestId,
+      },
+      android: {
+        priority: "high",
+        notification: {
+          sound: "default",
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+          },
+        },
+      },
+    };
+
+    try {
+      await admin.messaging().send(payload);
+      console.log("✅ Push notification sent to volunteer:", volunteerId);
+    } catch (error) {
+      console.error("❌ Failed to send push notification:", error);
+    }
+  }
+);

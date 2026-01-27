@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'pn_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -37,6 +38,8 @@ class _SignUpPageState extends State<SignUpPage> {
       // 🟪 Create Firebase User
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+
+      await PushNotificationService.initAndSaveToken();
 
       // 🟪 Save user data to Firestore
       await FirebaseFirestore.instance
