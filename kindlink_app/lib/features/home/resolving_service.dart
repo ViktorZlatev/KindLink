@@ -16,35 +16,35 @@ Future<void> closeHelpRequest({
 
     if (status != "accepted" && status != "closed_once") return;
 
-    // Existing values from Firestore
+    
     final bool closedByUser = data["closedByUser"] == true;
     final bool closedByVolunteer = data["closedByVolunteer"] == true;
 
     final update = <String, dynamic>{};
 
-    // ✅ Update ONLY the side that clicked
+    
     if (isVolunteer) {
-      if (closedByVolunteer) return; // prevent double click
+      if (closedByVolunteer) return; 
       update["closedByVolunteer"] = true;
     } else {
       if (closedByUser) return;
       update["closedByUser"] = true;
     }
 
-    // Updated values after this click
+   
     final bool userNowClosed =
         (!isVolunteer && true) || closedByUser;
 
     final bool volunteerNowClosed =
         (isVolunteer && true) || closedByVolunteer;
 
-    // FIRST CLOSE
+    
     if (status == "accepted") {
       update["status"] = "closed_once";
       update["closedOnceAt"] = FieldValue.serverTimestamp();
     }
 
-    // SECOND CLOSE → RESOLVED
+    
     if (userNowClosed && volunteerNowClosed) {
       update.addAll({
         "status": "resolved",

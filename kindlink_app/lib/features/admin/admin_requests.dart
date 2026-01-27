@@ -3,22 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Call this from admin_home:
-/// DisplayHelpRequests(context);
+// ignore: non_constant_identifier_names
 void DisplayHelpRequests(BuildContext context) {
-  showGeneralDialog(
+  showDialog(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Help Requests',
     barrierColor: Colors.black.withOpacity(0.45),
-    transitionDuration: const Duration(milliseconds: 250),
-    pageBuilder: (_, __, ___) {
-      return Center(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: const HelpRequestsPopup(),
-        ),
-      );
+    builder: (context) {
+      return const HelpRequestsPopup();
     },
   );
 }

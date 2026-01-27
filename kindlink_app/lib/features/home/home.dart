@@ -44,7 +44,7 @@ class _HomePageState extends State<Home> {
   String _volunteerStatus = "";
   bool _locationPopupShown = false;
   String? _activeRequestId;
-  String? _activeRequestStatus; // open | accepted | resolved
+  String? _activeRequestStatus; 
 
   Map<String, Marker> _volunteerMarkers = {};
 
@@ -109,9 +109,6 @@ class _HomePageState extends State<Home> {
     super.dispose();
   }
 
-  // --------------------------------------------------------
-  // 🔥 LOAD USER + START LISTENERS
-  // --------------------------------------------------------
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -144,25 +141,19 @@ class _HomePageState extends State<Home> {
         _loading = false;
       });
 
-      // ----------------------------------------------------
-      // ✅ ALWAYS start location updates for volunteers
-      // ----------------------------------------------------
+     
       if (_isVolunteer) {
         await mapFunctions.startVolunteerLocationUpdates(
           onError: (msg) => showTopMessage(context, msg),
         );
       }
 
-      // ----------------------------------------------------
-      // 👇 START HELP LISTENER SYSTEM
-      // ----------------------------------------------------
       
       _helpListener.startListening(
         isVolunteer: _isVolunteer,
-        isUser: !_isVolunteer, // ✅ user mode only when NOT volunteer
+        isUser: !_isVolunteer, 
 
         onNewRequest: (id, reqData) {
-          // Volunteer gets a new request (awaiting_volunteer)
           showVolunteerHelpPopup(
             context,
             requestId: id,
@@ -171,7 +162,6 @@ class _HomePageState extends State<Home> {
         },
 
         onVolunteerHelpAccepted: (id, reqData) {
-          // Volunteer gets accepted popup
           showVolunteerAcceptedPopup(
             context,
             requestId: id,
@@ -180,7 +170,6 @@ class _HomePageState extends State<Home> {
         },
 
         onVolunteerPendingForUser: (id, reqData) {
-          // Requester sees pending volunteer offer popup
           showAcceptedPopupUser(
             context,
             requestId: id,
@@ -189,9 +178,6 @@ class _HomePageState extends State<Home> {
         },
       );
 
-      // ----------------------------------------------------
-      // 📍 LOCATION INFO POPUP (ONLY ONCE)
-      // ----------------------------------------------------
       if (!_volunteerNotified && !_locationPopupShown) {
         Future.delayed(const Duration(milliseconds: 600), () async {
           if (!mounted) return;
@@ -232,9 +218,6 @@ class _HomePageState extends State<Home> {
         });
       }
 
-      // ----------------------------------------------------
-      // ❌ REJECTED VOLUNTEER MESSAGE
-      // ----------------------------------------------------
       if (_volunteerStatus == "rejected" && !_volunteerNotified) {
         if (!mounted) return;
         showTopMessage(context, "Sorry, you were not approved!");
@@ -250,15 +233,14 @@ class _HomePageState extends State<Home> {
     }
   }
 
-  // --------------------------------------------------------
-  // 🚨 IMMEDIATE HELP
-  // --------------------------------------------------------
+// main functions
+
   void _immediateHelp() {
     showEmergencyDialog(
       context,
       surveyCompleted: _surveyCompleted,
       onConfirm: () async {
-        Navigator.pop(context); // close emergency popup
+        Navigator.pop(context); 
 
         await HelpRequestService.sendImmediateHelpRequest(
           onError: (msg) {
@@ -273,9 +255,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // 🧑 SURVEY
-  // --------------------------------------------------------
   void _fillSurvey() {
     showSurvey(
       context,
@@ -299,9 +278,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // ✏️ UPDATE HELP REQUEST FORM
-  // --------------------------------------------------------
   void _requestHelp() {
     if (_surveyData == null) {
       showTopMessage(context, "No survey data found.");
@@ -328,9 +304,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // VOLUNTEER APPLICATION
-  // --------------------------------------------------------
   void _becomeVolunteer() {
     if (_isVolunteer) {
       showTopMessage(context, "You are already an approved volunteer.");
@@ -345,9 +318,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // LOGOUT
-  // --------------------------------------------------------
   void _logout() async {
     await mapFunctions.stopVolunteerLocationUpdates(); 
     await FirebaseAuth.instance.signOut();
@@ -355,9 +325,8 @@ class _HomePageState extends State<Home> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  // --------------------------------------------------------
-  // UI + MAP
-  // --------------------------------------------------------
+ //  ---- end ---- 
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -384,9 +353,8 @@ class _HomePageState extends State<Home> {
                   style: mapStyle,
                 ),
 
-                // --------------------
                 // TOP BAR
-                // --------------------
+
                 Positioned(
                   top: 0,
                   left: 0,
@@ -409,7 +377,6 @@ class _HomePageState extends State<Home> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // 👋 Greeting
                         Text(
                           username ?? 'User',
                           style: GoogleFonts.poppins(
@@ -419,11 +386,9 @@ class _HomePageState extends State<Home> {
                           ),
                         ),
 
-                        // 🔧 Actions
                         Row(
                           children: [
 
-                            // ✅ CLOSE HELP REQUEST (only when ACTIVE & ACCEPTED)
                             if (_activeRequestId != null &&
                               (_activeRequestStatus == "accepted" ||
                               _activeRequestStatus == "closed_once"))
@@ -485,7 +450,6 @@ class _HomePageState extends State<Home> {
                                 ),
                               ),
 
-                            // 🧑‍⚕️ Volunteer badge OR Become Volunteer
                             _isVolunteer
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(
@@ -537,7 +501,7 @@ class _HomePageState extends State<Home> {
 
                             const SizedBox(width: 13),
 
-                            // 🚪 Logout
+                            // Logout
                             IconButton(
                               icon: const Icon(
                                 Icons.logout,
@@ -553,10 +517,8 @@ class _HomePageState extends State<Home> {
                   ),
                 ),
             
-
-                // --------------------
                 // BOTTOM BUTTONS
-                // --------------------
+               
                 Positioned(
                   bottom: 40,
                   left: 20,

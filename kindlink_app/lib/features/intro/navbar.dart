@@ -13,7 +13,7 @@ class Navbar extends StatelessWidget {
         vertical: isMobile ? 12 : 20,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3EEE6), // same as home page
+        color: const Color(0xFFF3EEE6), 
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -25,7 +25,7 @@ class Navbar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Logo / App title
+          
           Text(
             "KindLink",
             style: GoogleFonts.poppins(
@@ -36,7 +36,7 @@ class Navbar extends StatelessWidget {
             ),
           ),
 
-          // --- Desktop menu ---
+         
           if (!isMobile)
             Row(
               children: [
@@ -57,7 +57,7 @@ class Navbar extends StatelessWidget {
                 ),
               ],
             )
-          // --- Mobile menu ---
+          
           else
             Row(
               children: [
@@ -90,7 +90,7 @@ class Navbar extends StatelessWidget {
     );
   }
 
-  // === NAV BUTTON ===
+  
   static Widget _navButton(String title, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -111,7 +111,7 @@ class Navbar extends StatelessWidget {
     );
   }
 
-  // === PRIMARY BUTTON ===
+
   static Widget _primaryButton({
     required String text,
     required bool filled,
@@ -156,7 +156,7 @@ class Navbar extends StatelessWidget {
     );
   }
 
-  // === MOBILE MENU ===
+  
   static void _showMobileMenu(BuildContext context) {
     showGeneralDialog(
       context: context,
@@ -226,7 +226,7 @@ class Navbar extends StatelessWidget {
     );
   }
 
-  // === MENU ITEM ===
+  
   static Widget _menuItem(BuildContext context, IconData icon, String text, String route) {
     return ListTile(
       leading: Icon(icon, color: const Color(0xFF6C63FF), size: 26),

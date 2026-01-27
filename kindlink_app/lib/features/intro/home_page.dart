@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ✅ Imported reusable Navbar instead of inline code
+              
               Navbar(isMobile: isMobile),
 
               // === HERO SECTION ===
@@ -121,7 +121,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // === INFO CARD (kept exactly as in your original) ===
+  // === INFO CARD ===
   Widget _infoCard({
     required IconData icon,
     required String title,

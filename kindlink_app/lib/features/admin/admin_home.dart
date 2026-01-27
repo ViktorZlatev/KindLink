@@ -26,18 +26,16 @@ class _AdminHomeState extends State<AdminHome> {
 
   Future<void> _loadAdminData() async {
     try {
-      // 🔹 1. Get all users
       final usersSnapshot =
           await FirebaseFirestore.instance.collection('users').get();
       totalUsers = usersSnapshot.docs.length;
 
-      // 🔹 2. For EACH user, look into /users/{uid}/volunteer_forms
       int pendingCount = 0;
 
       for (final userDoc in usersSnapshot.docs) {
         final volunteerSnap = await userDoc.reference
-            .collection('volunteer_forms')        // 👈 subcollection under each user
-            .where('status', isEqualTo: 'pending') // only pending
+            .collection('volunteer_forms') 
+            .where('status', isEqualTo: 'pending')
             .get();
 
         pendingCount += volunteerSnap.docs.length;
@@ -45,7 +43,6 @@ class _AdminHomeState extends State<AdminHome> {
 
       pendingVolunteers = pendingCount;
 
-      // 🔹 3. Count active SOS alerts (if you use this collection)
       final sosSnapshot = await FirebaseFirestore.instance
           .collection('sos_alerts')
           .where('status', isEqualTo: 'active')
@@ -78,7 +75,6 @@ class _AdminHomeState extends State<AdminHome> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
@@ -163,7 +159,6 @@ class _AdminHomeState extends State<AdminHome> {
           : SafeArea(
               child: Column(
                 children: [
-                  // 🔝 Top Bar
                   Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: isMobile ? 16 : 40,
@@ -202,7 +197,6 @@ class _AdminHomeState extends State<AdminHome> {
 
                   const SizedBox(height: 20),
 
-                  // 📊 Stats Section
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: isMobile ? 16 : 40,
@@ -222,7 +216,6 @@ class _AdminHomeState extends State<AdminHome> {
 
                   const SizedBox(height: 25),
 
-                  // 🔧 Action Buttons
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: isMobile ? 16 : 40,

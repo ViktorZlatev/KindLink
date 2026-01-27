@@ -8,7 +8,7 @@ void showAcceptedPopupUser(
   required Map<String, dynamic> data,
 }) {
   final volunteerName = data["volunteerName"] ?? "A volunteer";
-  final volunteerId = data["volunteerId"]; // 🔑 REQUIRED
+  final volunteerId = data["volunteerId"]; 
 
   showDialog(
     context: context,
@@ -47,7 +47,6 @@ void showAcceptedPopupUser(
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // ❌ REJECT HELP
                   TextButton(
                     onPressed: () async {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -74,7 +73,6 @@ void showAcceptedPopupUser(
                     ),
                   ),
 
-                  // ✅ ACCEPT HELP
                   ElevatedButton(
                     onPressed: volunteerId == null
                         ? null

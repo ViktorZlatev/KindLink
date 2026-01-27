@@ -25,12 +25,12 @@ class HelpRequestService {
           ? Map<String, dynamic>.from(userData['survey'])
           : <String, dynamic>{};
 
-      // 1) Create help request
+      
       final docRef =
           await FirebaseFirestore.instance.collection('help_requests').add({
         'userId': user.uid,
         'username': userData['username'] ?? user.email,
-        'location': userData['location'], // may be null
+        'location': userData['location'], 
         'resume': resume,
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'open',
@@ -38,7 +38,6 @@ class HelpRequestService {
 
       final requestId = docRef.id;
 
-      // 2) Call callable Cloud Function (auth is required; SDK includes token automatically)
       final callable = FirebaseFunctions.instance.httpsCallable(
         'rankHelpRequest',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 60)),

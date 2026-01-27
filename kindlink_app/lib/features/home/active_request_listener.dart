@@ -40,7 +40,6 @@ class ActiveHelpRequestListener {
           final doc = snapshot.docs.first;
           final status = doc.data()["status"];
 
-          // ✅ FORCE UI CLEAR WHEN RESOLVED
           if (status == "resolved") {
             onChanged(requestId: null, status: null);
             return;
