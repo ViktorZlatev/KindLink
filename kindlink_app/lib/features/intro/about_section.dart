@@ -12,10 +12,10 @@ class AboutSection extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          // ✅ Use shared Navbar
+          
           Navbar(isMobile: isMobile),
 
-          // ✅ Page content
+          
           Expanded(
             child: SingleChildScrollView(
               child: Container(
@@ -76,13 +76,13 @@ class AboutSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 80),
 
-                    // ✅ Footer
+                    
                     Container(
                       width: double.infinity,
                       color: const Color(0xFF2E2E2E),
                       padding: const EdgeInsets.all(20),
                       child: Text(
-                        "© 2025 KindLink • Made with ❤️ in Bulgaria",
+                        "© 2025 KindLink • Made in Bulgaria",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 14,

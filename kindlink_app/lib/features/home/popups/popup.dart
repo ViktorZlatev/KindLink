@@ -6,7 +6,6 @@ void showEmergencyDialog(
   required bool surveyCompleted,
   required VoidCallback onConfirm,
 }) {
-  // Messages shown based on whether user completed survey
   final List<String> bulletPoints = surveyCompleted
       ? [
           'Notifies volunteers who best match your personal profile.',
@@ -19,18 +18,15 @@ void showEmergencyDialog(
           'Use only if someone needs immediate help.',
         ];
 
-  // ✅ FIX #1 — Use showDialog() instead of showGeneralDialog()
-  // This prevents UI flicker / button movement / map redraw issues.
   showDialog(
     context: context,
     barrierDismissible: true,
     builder: (context) {
       return Dialog(
-        // Optional: semi-transparent background
+
         insetPadding: const EdgeInsets.symmetric(horizontal: 30),
         backgroundColor: Colors.white.withOpacity(0.95),
 
-        // rounded corners
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
@@ -60,7 +56,6 @@ void showEmergencyDialog(
 
               const SizedBox(height: 16),
 
-              // bullet points
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: bulletPoints
@@ -70,7 +65,7 @@ void showEmergencyDialog(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // bullet icon
+                            
                             Container(
                               margin: const EdgeInsets.only(top: 6),
                               width: 6,
@@ -82,7 +77,7 @@ void showEmergencyDialog(
                             ),
                             const SizedBox(width: 10),
 
-                            // text
+                            
                             Expanded(
                               child: Text(
                                 point,

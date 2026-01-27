@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 const OpenAI = require("openai");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 
-// v2 imports (REQUIRED for secrets)
+// v2 imports
 const { onCall } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 
@@ -12,7 +12,7 @@ const db = admin.firestore();
 // Secret (v2)
 const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
-// ---------------- GEO DISTANCE ----------------
+// GEO DISTANCE
 function haversineKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -27,7 +27,8 @@ function haversineKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// ---------------- SAFE JSON PARSE ----------------
+// json parse
+
 function safeJsonParseFromModel(content) {
   let raw = (content || "").trim();
 
@@ -47,7 +48,7 @@ function safeJsonParseFromModel(content) {
   }
 }
 
-// ---------------- MAIN FUNCTION (FIXED) ----------------
+// main func
 exports.rankHelpRequest = onCall(
   {
     secrets: [OPENAI_API_KEY],
@@ -69,7 +70,6 @@ exports.rankHelpRequest = onCall(
 
     const reqRef = db.collection("help_requests").doc(requestId);
 
-    // 🔒 TRANSACTION (your logic preserved)
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(reqRef);
       if (!snap.exists) {
@@ -91,7 +91,6 @@ exports.rankHelpRequest = onCall(
     const reqSnap = await reqRef.get();
     const requestData = reqSnap.data();
 
-    // Load volunteers
     const usersSnap = await db
       .collection("users")
       .where("isVolunteer", "==", true)
@@ -142,7 +141,7 @@ exports.rankHelpRequest = onCall(
       return { ok: true, rankedCount: 0 };
     }
 
-    // OpenAI client (SECRET SAFE)
+    // OpenAI
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY.value(),
     });
@@ -344,9 +343,9 @@ exports.notifyAssignedVolunteer = onDocumentUpdated(
 
     try {
       await admin.messaging().send(payload);
-      console.log("✅ Push notification sent to volunteer:", volunteerId);
+      console.log("Push notification sent to volunteer:", volunteerId);
     } catch (error) {
-      console.error("❌ Failed to send push notification:", error);
+      console.error("Failed to send push notification:", error);
     }
   }
 );

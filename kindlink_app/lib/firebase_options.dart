@@ -1,5 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';  // Import this for kIsWeb and defaultTargetPlatform
+import 'package:flutter/foundation.dart';  
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {

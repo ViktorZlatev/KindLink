@@ -75,7 +75,6 @@ void showVolunteerHelpPopup(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
 
-                  // REJECT
                   TextButton(
                     onPressed: () async {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -105,7 +104,6 @@ void showVolunteerHelpPopup(
                     ),
                   ),
 
-                  // ACCEPT
                   
                   ElevatedButton(
                     onPressed: () async {
