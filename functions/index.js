@@ -1,7 +1,8 @@
 const admin = require("firebase-admin");
 const OpenAI = require("openai");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 
-// v2 imports (REQUIRED for secrets)
+// v2 imports
 const { onCall } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 
@@ -11,7 +12,7 @@ const db = admin.firestore();
 // Secret (v2)
 const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
-// ---------------- GEO DISTANCE ----------------
+// GEO DISTANCE
 function haversineKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -26,7 +27,8 @@ function haversineKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// ---------------- SAFE JSON PARSE ----------------
+// json parse
+
 function safeJsonParseFromModel(content) {
   let raw = (content || "").trim();
 
@@ -46,7 +48,7 @@ function safeJsonParseFromModel(content) {
   }
 }
 
-// ---------------- MAIN FUNCTION (FIXED) ----------------
+// main func
 exports.rankHelpRequest = onCall(
   {
     secrets: [OPENAI_API_KEY],
@@ -68,7 +70,6 @@ exports.rankHelpRequest = onCall(
 
     const reqRef = db.collection("help_requests").doc(requestId);
 
-    // 🔒 TRANSACTION (your logic preserved)
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(reqRef);
       if (!snap.exists) {
@@ -90,7 +91,6 @@ exports.rankHelpRequest = onCall(
     const reqSnap = await reqRef.get();
     const requestData = reqSnap.data();
 
-    // Load volunteers
     const usersSnap = await db
       .collection("users")
       .where("isVolunteer", "==", true)
@@ -141,7 +141,7 @@ exports.rankHelpRequest = onCall(
       return { ok: true, rankedCount: 0 };
     }
 
-    // OpenAI client (SECRET SAFE)
+    // OpenAI
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY.value(),
     });
@@ -206,6 +206,7 @@ You MUST return EXACTLY this JSON format:
   }
 );
 
+// reject function
 
 exports.rejectHelpRequest = onCall(async (request) => {
   const { auth, data } = request;
@@ -271,3 +272,80 @@ exports.rejectHelpRequest = onCall(async (request) => {
   return { ok: true };
 });
 
+// push notification function
+
+exports.notifyAssignedVolunteer = onDocumentUpdated(
+    {
+      document: "help_requests/{requestId}",
+      region: "us-central1",
+    },
+    async (event) => {
+    
+    const beforeSnap = event.data?.before;
+    const afterSnap = event.data?.after;
+
+    if (!beforeSnap?.exists || !afterSnap?.exists) {
+      return;
+    }
+
+    const before = beforeSnap.data();
+    const after = afterSnap.data();
+
+    if (
+      before.currentVolunteerId === after.currentVolunteerId ||
+      !after.currentVolunteerId ||
+      after.status !== "awaiting_volunteer"
+    ) {
+      return;
+    }
+
+    const volunteerId = after.currentVolunteerId;
+    const requestId = event.params.requestId;
+
+    const volunteerSnap = await db.collection("users").doc(volunteerId).get();
+    if (!volunteerSnap.exists) {
+      console.log("Volunteer user not found:", volunteerId);
+      return;
+    }
+
+    const volunteerData = volunteerSnap.data() || {};
+    const fcmToken = volunteerData.fcmToken;
+
+    if (!fcmToken) {
+      console.log("No FCM token for volunteer:", volunteerId);
+      return;
+    }
+
+    const payload = {
+      token: fcmToken,
+      notification: {
+        title: "Emergency Assistance Needed",
+        body: "A nearby user requires immediate help. Tap to respond.",
+      },
+      data: {
+        type: "HELP_REQUEST",
+        requestId: requestId,
+      },
+      android: {
+        priority: "high",
+        notification: {
+          sound: "default",
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+          },
+        },
+      },
+    };
+
+    try {
+      await admin.messaging().send(payload);
+      console.log("Push notification sent to volunteer:", volunteerId);
+    } catch (error) {
+      console.error("Failed to send push notification:", error);
+    }
+  }
+);

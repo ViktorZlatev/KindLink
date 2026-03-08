@@ -8,25 +8,27 @@ void showAcceptedPopupUser(
   required Map<String, dynamic> data,
 }) {
   final volunteerName = data["volunteerName"] ?? "A volunteer";
+  final volunteerId = data["volunteerId"]; 
 
   showDialog(
     context: context,
     barrierDismissible: false,
     barrierColor: Colors.black.withOpacity(0.45),
-
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
         backgroundColor: Colors.white.withOpacity(0.97),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.volunteer_activism,
-                  size: 50, color: Color(0xFF6C63FF)),
+              const Icon(
+                Icons.volunteer_activism,
+                size: 50,
+                color: Color(0xFF6C63FF),
+              ),
 
               const SizedBox(height: 16),
 
@@ -35,7 +37,7 @@ void showAcceptedPopupUser(
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF6C63FF),
+                  color: const Color(0xFF6C63FF),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -45,8 +47,6 @@ void showAcceptedPopupUser(
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-
-                  // REJECT HELP
                   TextButton(
                     onPressed: () async {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -58,6 +58,9 @@ void showAcceptedPopupUser(
                         "status": "open",
                         "volunteerId": null,
                         "volunteerName": null,
+                        "currentVolunteerId": null,
+                        "acceptedVolunteerId": null,
+                        "acceptedAt": null,
                       });
                     },
                     child: Text(
@@ -70,29 +73,33 @@ void showAcceptedPopupUser(
                     ),
                   ),
 
-                  // ACCEPT HELP
                   ElevatedButton(
-                    onPressed: () async {
-                      Navigator.of(context, rootNavigator: true).pop();
+                    onPressed: volunteerId == null
+                        ? null
+                        : () async {
+                            Navigator.of(context, rootNavigator: true).pop();
 
-                      await FirebaseFirestore.instance
-                          .collection("help_requests")
-                          .doc(requestId)
-                          .update({
-                        "status": "accepted",
-                        "resolved": false,
-                      });
-                    },
-
+                            await FirebaseFirestore.instance
+                                .collection("help_requests")
+                                .doc(requestId)
+                                .update({
+                              "status": "accepted",
+                              "acceptedVolunteerId": volunteerId,
+                              "acceptedAt": FieldValue.serverTimestamp(),
+                              "resolved": false,
+                            });
+                          },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF6C63FF),
+                      backgroundColor: const Color(0xFF6C63FF),
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 22,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-
                     child: Text(
                       "Accept",
                       style: GoogleFonts.poppins(

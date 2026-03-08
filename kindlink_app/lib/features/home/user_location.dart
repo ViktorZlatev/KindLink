@@ -3,10 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
-  /// Saves the current user's location to Firestore ONE TIME (no stream).
-  ///
-  /// - For normal users: call this once after permission is granted.
-  /// - Writes into: users/{uid}.location.{lat,lng,updatedAt}
+  
   static Future<void> saveUserLocationOnce({
     required void Function(String) onError,
   }) async {
@@ -24,7 +21,7 @@ class LocationService {
 
     LocationPermission permission = await Geolocator.checkPermission();
 
-    // Request permission if needed
+   
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
@@ -39,8 +36,6 @@ class LocationService {
       return;
     }
 
-    // For users, "whileInUse" is sufficient. No background requirement here.
-    // Get one position fix.
     final position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );

@@ -20,18 +20,19 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.kindlink_app"
+    applicationId = "com.example.kindlink_app"
 
-        // --- FIXED MIN SDK ---
-        // Firebase Auth v23.2.1 requires at least API level 23.
-        minSdk = 23
+    minSdk = 23
+    targetSdk = flutter.targetSdkVersion
+    versionCode = flutter.versionCode
+    versionName = flutter.versionName
 
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
+    // 🔑 Manifest placeholders (REQUIRED)
+    manifestPlaceholders = [
+        applicationName: "io.flutter.app.FlutterApplication",
+        MAPS_API_KEY: project.properties["MAPS_API_KEY"] ?: ""
+     ]
+   }
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

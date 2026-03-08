@@ -3,21 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Call this from admin_home:  DisplayVolunteers(context);
+// ignore: non_constant_identifier_names
 void DisplayVolunteers(BuildContext context) {
-  showGeneralDialog(
+  showDialog(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Volunteer Applications',
     barrierColor: Colors.black.withOpacity(0.45),
-    transitionDuration: const Duration(milliseconds: 250),
-    pageBuilder: (_, __, ___) {
-      return Center(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: const VolunteerPopup(),
-        ),
-      );
+    builder: (context) {
+      return const VolunteerPopup();
     },
   );
 }
@@ -56,7 +49,7 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
           final data = doc.data();
 
           list.add({
-            "userId": user.id,   // 🔐 stable IDs, no name collision
+            "userId": user.id,   
             "formId": doc.id,
             "data": data,
           });
@@ -81,7 +74,6 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
     }
   }
 
-  /// 🔥 Accept or reject a volunteer request
   Future<void> _handleDecision(Map<String, dynamic> v, bool accept) async {
     if (_processing) return;
     setState(() => _processing = true);
@@ -104,7 +96,6 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
         return;
       }
 
-      // 🔄 Update volunteer form status
       await FirebaseFirestore.instance
           .collection("users")
           .doc(userId)
@@ -112,12 +103,14 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
           .doc(formId)
           .update({"status": accept ? "accepted" : "rejected"});
 
-      // ✅ If accepted → mark user as volunteer
       if (accept) {
         await FirebaseFirestore.instance
             .collection("users")
             .doc(userId)
-            .update({"isVolunteer": true});
+            .update({
+              "isVolunteer": true, 
+              "VolunteerStatus": "approved"
+            });
       }else{
         await FirebaseFirestore.instance
         .collection("users")
@@ -127,14 +120,12 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
 
       if (!mounted) return;
 
-      // 🧽 Remove from local list
       setState(() {
         volunteers.removeWhere((item) =>
             item["userId"] == userId && item["formId"] == formId);
         _processing = false;
       });
 
-      // 🧨 Show feedback
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -143,7 +134,6 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
         ),
       );
 
-      // If no more -> close popup
       if (volunteers.isEmpty) {
         Navigator.of(context, rootNavigator: true).pop();
       }
@@ -201,7 +191,6 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // ❌ Reject
               ElevatedButton(
                 onPressed: _processing ? null : () => _handleDecision(v, false),
                 style: ElevatedButton.styleFrom(
@@ -214,7 +203,6 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
                 child: const Text("Reject"),
               ),
 
-              // ✅ Accept
               ElevatedButton(
                 onPressed: _processing ? null : () => _handleDecision(v, true),
                 style: ElevatedButton.styleFrom(

@@ -24,6 +24,9 @@ import 'volunteer.dart';
 import 'help.dart';
 import 'help_listener.dart';
 import 'popups/accept_popup.dart';
+import 'popups/volunteer_accept_popup.dart';
+import 'active_request_listener.dart';
+import 'resolving_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -40,11 +43,14 @@ class _HomePageState extends State<Home> {
   bool _volunteerNotified = false;
   String _volunteerStatus = "";
   bool _locationPopupShown = false;
+  String? _activeRequestId;
+  String? _activeRequestStatus; 
 
   Map<String, Marker> _volunteerMarkers = {};
 
   final MapFunctions mapFunctions = MapFunctions();
   final HelpListenerService _helpListener = HelpListenerService();
+  final _activeRequestListener = ActiveHelpRequestListener();
 
   Map<String, dynamic>? _surveyData;
 
@@ -83,18 +89,26 @@ class _HomePageState extends State<Home> {
         );
       },
     );
+
+    _activeRequestListener.start(
+      onChanged: ({String? requestId, String? status}) {
+        if (!mounted) return;
+        setState(() {
+          _activeRequestId = requestId;
+          _activeRequestStatus = status;
+        });
+      },
+    );
   }
 
   @override
   void dispose() {
     mapFunctions.dispose();
     _helpListener.dispose();
+    _activeRequestListener.dispose();
     super.dispose();
   }
 
-  // --------------------------------------------------------
-  // 🔥 LOAD USER + START LISTENERS
-  // --------------------------------------------------------
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -127,21 +141,18 @@ class _HomePageState extends State<Home> {
         _loading = false;
       });
 
-      // ----------------------------------------------------
-      // ✅ ALWAYS start location updates for volunteers
-      // ----------------------------------------------------
+     
       if (_isVolunteer) {
         await mapFunctions.startVolunteerLocationUpdates(
           onError: (msg) => showTopMessage(context, msg),
         );
       }
 
-      // ----------------------------------------------------
-      // 👇 START HELP LISTENER SYSTEM
-      // ----------------------------------------------------
+      
       _helpListener.startListening(
         isVolunteer: _isVolunteer,
-        isUser: true,
+        isUser: !_isVolunteer, 
+
         onNewRequest: (id, reqData) {
           showVolunteerHelpPopup(
             context,
@@ -149,7 +160,16 @@ class _HomePageState extends State<Home> {
             data: reqData,
           );
         },
-        onVolunteerAccepted: (id, reqData) {
+
+        onVolunteerHelpAccepted: (id, reqData) {
+          showVolunteerAcceptedPopup(
+            context,
+            requestId: id,
+            data: reqData,
+          );
+        },
+
+        onVolunteerPendingForUser: (id, reqData) {
           showAcceptedPopupUser(
             context,
             requestId: id,
@@ -158,9 +178,6 @@ class _HomePageState extends State<Home> {
         },
       );
 
-      // ----------------------------------------------------
-      // 📍 LOCATION INFO POPUP (ONLY ONCE)
-      // ----------------------------------------------------
       if (!_volunteerNotified && !_locationPopupShown) {
         Future.delayed(const Duration(milliseconds: 600), () async {
           if (!mounted) return;
@@ -201,9 +218,6 @@ class _HomePageState extends State<Home> {
         });
       }
 
-      // ----------------------------------------------------
-      // ❌ REJECTED VOLUNTEER MESSAGE
-      // ----------------------------------------------------
       if (_volunteerStatus == "rejected" && !_volunteerNotified) {
         if (!mounted) return;
         showTopMessage(context, "Sorry, you were not approved!");
@@ -219,15 +233,14 @@ class _HomePageState extends State<Home> {
     }
   }
 
-  // --------------------------------------------------------
-  // 🚨 IMMEDIATE HELP
-  // --------------------------------------------------------
+// main functions
+
   void _immediateHelp() {
     showEmergencyDialog(
       context,
       surveyCompleted: _surveyCompleted,
       onConfirm: () async {
-        Navigator.pop(context); // close emergency popup
+        Navigator.pop(context); 
 
         await HelpRequestService.sendImmediateHelpRequest(
           onError: (msg) {
@@ -242,9 +255,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // 🧑 SURVEY
-  // --------------------------------------------------------
   void _fillSurvey() {
     showSurvey(
       context,
@@ -268,9 +278,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // ✏️ UPDATE HELP REQUEST FORM
-  // --------------------------------------------------------
   void _requestHelp() {
     if (_surveyData == null) {
       showTopMessage(context, "No survey data found.");
@@ -297,9 +304,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // VOLUNTEER APPLICATION
-  // --------------------------------------------------------
   void _becomeVolunteer() {
     if (_isVolunteer) {
       showTopMessage(context, "You are already an approved volunteer.");
@@ -314,9 +318,6 @@ class _HomePageState extends State<Home> {
     );
   }
 
-  // --------------------------------------------------------
-  // LOGOUT
-  // --------------------------------------------------------
   void _logout() async {
     await mapFunctions.stopVolunteerLocationUpdates(); 
     await FirebaseAuth.instance.signOut();
@@ -324,9 +325,8 @@ class _HomePageState extends State<Home> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  // --------------------------------------------------------
-  // UI + MAP
-  // --------------------------------------------------------
+ //  ---- end ---- 
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -353,9 +353,8 @@ class _HomePageState extends State<Home> {
                   style: mapStyle,
                 ),
 
-                // --------------------
                 // TOP BAR
-                // --------------------
+
                 Positioned(
                   top: 0,
                   left: 0,
@@ -379,32 +378,97 @@ class _HomePageState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Hello, ${username ?? 'User'}!',
+                          username ?? 'User',
                           style: GoogleFonts.poppins(
                             fontSize: isMobile ? 20 : 24,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF6C63FF),
+                            color: const Color.fromARGB(255, 47, 43, 114),
                           ),
                         ),
+
                         Row(
                           children: [
+
+                            if (_activeRequestId != null &&
+                              (_activeRequestStatus == "accepted" ||
+                              _activeRequestStatus == "closed_once"))
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await closeHelpRequest(
+                                      requestId: _activeRequestId!,
+                                      isVolunteer: _isVolunteer,
+                                    );
+
+                                    final snap = await FirebaseFirestore.instance
+                                        .collection("help_requests")
+                                        .doc(_activeRequestId!)
+                                        .get();
+
+                                    if (!snap.exists || !context.mounted) return;
+
+                                    final status = snap.data()?["status"];
+                                    
+                                    if (status == "resolved") {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("The help request is resolved!"),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                    
+                                    else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Marked as completed. Waiting for the other participant.",
+                                          ),
+                                          backgroundColor: Color(0xFF6C63FF),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  icon: const Icon(Icons.check_circle_outline),
+                                  label: Text(
+                                    "Close",
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF6C63FF),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    elevation: 4,
+                                  ),
+                                ),
+                              ),
+
                             _isVolunteer
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
+                                        horizontal: 14, vertical: 7),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFE6D8FF),
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.volunteer_activism,
-                                            color: Color(0xFF6C63FF)),
+                                        const Icon(
+                                          Icons.volunteer_activism,
+                                          color: Color(0xFF6C63FF),
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           "Volunteer",
                                           style: GoogleFonts.poppins(
-                                            fontSize: 17,
+                                            fontSize: 15,
                                             fontWeight: FontWeight.w600,
                                             color: const Color(0xFF6C63FF),
                                           ),
@@ -418,7 +482,7 @@ class _HomePageState extends State<Home> {
                                       backgroundColor: Colors.white,
                                       foregroundColor: const Color(0xFF6C63FF),
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 18),
+                                          vertical: 10, horizontal: 16),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(30),
                                         side: const BorderSide(
@@ -429,15 +493,20 @@ class _HomePageState extends State<Home> {
                                     child: Text(
                                       'Volunteer',
                                       style: GoogleFonts.poppins(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
+
                             const SizedBox(width: 13),
+
+                            // Logout
                             IconButton(
-                              icon: const Icon(Icons.logout,
-                                  color: Color(0xFF6C63FF)),
+                              icon: const Icon(
+                                Icons.logout,
+                                color: Color(0xFF6C63FF),
+                              ),
                               tooltip: 'Logout',
                               onPressed: _logout,
                             ),
@@ -447,10 +516,9 @@ class _HomePageState extends State<Home> {
                     ),
                   ),
                 ),
-
-                // --------------------
+            
                 // BOTTOM BUTTONS
-                // --------------------
+               
                 Positioned(
                   bottom: 40,
                   left: 20,

@@ -8,7 +8,7 @@ void showVolunteerLocationPermissionDialog(
 }) {
   showDialog(
     context: context,
-    barrierDismissible: false, // user must choose Allow or Deny
+    barrierDismissible: false, 
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
@@ -71,12 +71,12 @@ void showVolunteerLocationPermissionDialog(
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      onDeny();
+                      onAllow();
                     },
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8C9EFF), // 💜 light blue-purple
-                      foregroundColor: Colors.white,            // text/icon color
+                      backgroundColor: const Color(0xFF8C9EFF), 
+                      foregroundColor: Colors.white,            
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22,
                         vertical: 12,
@@ -101,7 +101,7 @@ void showVolunteerLocationPermissionDialog(
                     onPressed: () {
 
                       Navigator.pop(context);
-                      onAllow();
+                      onDeny();
                     },
                     
                     child: Text(

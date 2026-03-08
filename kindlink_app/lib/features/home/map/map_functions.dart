@@ -18,9 +18,9 @@ class MapFunctions {
 
   bool _isStreaming = false;
 
-  // =====================================
-  // 1️⃣ SAVE SINGLE LOCATION (ALL USERS)
-  // =====================================
+  
+  // SAVE SINGLE LOCATION - ALL USERS
+  
   Future<void> saveSingleLocation({
     required Function(String) onError,
   }) async {
@@ -56,9 +56,9 @@ class MapFunctions {
     }, SetOptions(merge: true));
   }
 
-  // =====================================
-  // 2️⃣ START LIVE LOCATION (VOLUNTEERS)
-  // =====================================
+
+  // START LIVE LOCATION - VOLUNTEERS
+  
   Future<void> startVolunteerLocationUpdates({
     required Function(String) onError,
   }) async {
@@ -109,18 +109,17 @@ class MapFunctions {
     });
   }
 
-  // =====================================
-  // 3️⃣ STOP LIVE LOCATION
-  // =====================================
+  
+  // STOP LIVE LOCATION
+  
   Future<void> stopVolunteerLocationUpdates() async {
     _isStreaming = false;
     await _liveLocationStream?.cancel();
     _liveLocationStream = null;
   }
 
-  // =====================================
-  // 4️⃣ LISTEN TO VOLUNTEER MARKERS
-  // =====================================
+  // LISTEN TO VOLUNTEER MARKERS
+
   void listenToVolunteerLocations({
     required Function(Map<String, Marker>) onMarkersUpdated,
     required MarkerTapCallback onMarkerTap,

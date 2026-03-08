@@ -9,42 +9,71 @@ class HelpListenerService {
   void startListening({
     required bool isVolunteer,
     required bool isUser,
-    required void Function(String id, Map<String, dynamic> data) onNewRequest,
-    required void Function(String id, Map<String, dynamic> data) onVolunteerAccepted,
+
+    required void Function(String requestId, Map<String, dynamic> data)
+        onNewRequest,
+
+    required void Function(String requestId, Map<String, dynamic> data)
+        onVolunteerHelpAccepted,
+
+    required void Function(String requestId, Map<String, dynamic> data)
+        onVolunteerPendingForUser,
   }) {
     _sub?.cancel();
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
 
-    // ---------------------------------------------
-    // VOLUNTEER: listen only to requests assigned to them
-    // ---------------------------------------------
+    // VOLUNTEER LISTENER
+
     if (isVolunteer) {
       _sub = FirebaseFirestore.instance
           .collection("help_requests")
-          .where("status", isEqualTo: "awaiting_volunteer")
+          .where(
+            "status",
+            whereIn: ["awaiting_volunteer", "accepted"],
+          )
           .where("currentVolunteerId", isEqualTo: currentUser.uid)
           .snapshots()
           .listen((snapshot) {
         for (final change in snapshot.docChanges) {
-          if (change.type == DocumentChangeType.added ||
-              change.type == DocumentChangeType.modified) {
-            final doc = change.doc;
-            final data = doc.data() ?? <String, dynamic>{};
+          if (change.type != DocumentChangeType.added &&
+              change.type != DocumentChangeType.modified) {
+            continue;
+          }
+
+          final doc = change.doc;
+          final data = doc.data() ?? <String, dynamic>{};
+          final status = data["status"];
+
+          if (status == "awaiting_volunteer") {
             onNewRequest(doc.id, data);
+            continue;
+          }
+
+          if (status == "accepted" &&
+              data["acceptedVolunteerId"] == currentUser.uid &&
+              data["volunteerNotified"] != true) {
+
+            onVolunteerHelpAccepted(doc.id, data);
+
+            FirebaseFirestore.instance
+                .collection("help_requests")
+                .doc(doc.id)
+                .update({
+              "volunteerNotified": true,
+            });
           }
         }
       }, onError: (e) {
-        debugPrint("HelpListener error: $e");
+        debugPrint("HelpListener (volunteer) error: $e");
       });
 
       return;
     }
 
-    // ---------------------------------------------
-    // REQUESTER: see when their request becomes pending (accepted)
-    // ---------------------------------------------
+    // REQUESTER LISTENER
+   
     if (isUser) {
       _sub = FirebaseFirestore.instance
           .collection("help_requests")
@@ -53,18 +82,26 @@ class HelpListenerService {
           .snapshots()
           .listen((snapshot) {
         for (final change in snapshot.docChanges) {
+          if (change.type != DocumentChangeType.added &&
+              change.type != DocumentChangeType.modified) {
+            continue;
+          }
+
           final doc = change.doc;
           final data = doc.data() ?? <String, dynamic>{};
 
           if (data["status"] == "pending") {
-            onVolunteerAccepted(doc.id, data);
+            onVolunteerPendingForUser(doc.id, data);
           }
         }
       }, onError: (e) {
-        debugPrint("HelpListener error: $e");
+        debugPrint("HelpListener (user) error: $e");
       });
     }
   }
 
-  void dispose() => _sub?.cancel();
+  void dispose() {
+    _sub?.cancel();
+    _sub = null;
+  }
 }

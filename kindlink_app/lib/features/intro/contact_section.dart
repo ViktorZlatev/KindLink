@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kindlink/features/intro/navbar.dart'; // ✅ make sure you have this shared navbar file
+import 'package:kindlink/features/intro/navbar.dart'; 
 
 class ContactSection extends StatelessWidget {
   const ContactSection({super.key});
@@ -14,10 +14,10 @@ class ContactSection extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F0E8),
       body: Column(
         children: [
-          // ✅ Shared Navbar
+          
           Navbar(isMobile: isMobile),
 
-          // ✅ Contact Content
+          
           Expanded(
             child: SingleChildScrollView(
               child: Container(
@@ -34,7 +34,7 @@ class ContactSection extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: isMobile ? 28 : 36,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF6C63FF),
+                        color: const Color.fromARGB(255, 161, 107, 241),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -51,7 +51,7 @@ class ContactSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
 
-                    // ✅ Contact Info Cards
+                    
                     Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 20,
@@ -60,12 +60,12 @@ class ContactSection extends StatelessWidget {
                         _infoCard(
                           icon: Icons.email_outlined,
                           title: "Email",
-                          text: "contact@kindlink.org",
+                          text: "vzlatev7@gmail.com",
                         ),
                         _infoCard(
                           icon: Icons.phone_outlined,
                           title: "Phone",
-                          text: "+359 123 456 789",
+                          text: "+359 88 370 3503",
                         ),
                         _infoCard(
                           icon: Icons.location_on_outlined,
@@ -86,7 +86,7 @@ class ContactSection extends StatelessWidget {
     );
   }
 
-  // ✅ Reusable Contact Info Card
+  
   Widget _infoCard({
     required IconData icon,
     required String title,

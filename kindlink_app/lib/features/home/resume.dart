@@ -1,6 +1,3 @@
-// FULL FIXED VERSION — CLEAN DIALOG, NO FLICKER
-// (Shortened explanation: identical UI, stable behavior)
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

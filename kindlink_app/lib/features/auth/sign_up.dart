@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'pn_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -28,17 +29,16 @@ class _SignUpPageState extends State<SignUpPage> {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
 
-      // 🟥 Check Admin Credentials
       bool isAdmin = 
           username == "admin" &&
           email == "admin@gmail.com" &&
           password == "admin123";
 
-      // 🟪 Create Firebase User
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // 🟪 Save user data to Firestore
+      await PushNotificationService.initAndSaveToken();
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(credential.user!.uid)
@@ -50,7 +50,6 @@ class _SignUpPageState extends State<SignUpPage> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // 🟨 Redirect: Admin → admin_home | User → home
       if (mounted) {
         Navigator.pushReplacementNamed(
             context, isAdmin ? '/admin_home' : '/home');
@@ -102,7 +101,6 @@ class _SignUpPageState extends State<SignUpPage> {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              // Back arrow
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(
@@ -125,7 +123,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
 
-              // Header
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(
@@ -147,7 +144,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Sign Up Card
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 20),
                       padding: const EdgeInsets.all(24),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'pn_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,18 +30,17 @@ class _LoginPageState extends State<LoginPage> {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
 
-      // 🟥 Admin login check BEFORE Firebase sign-in
       bool isAdmin =
           email == "admin@gmail.com" &&
           password == "admin123";
 
-      // 🟪 Login with Firebase
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // 🟩 Redirect
+      await PushNotificationService.initAndSaveToken();
+
       if (mounted) {
         Navigator.pushReplacementNamed(
             context, isAdmin ? '/admin_home' : '/home');
@@ -102,7 +102,6 @@ class _LoginPageState extends State<LoginPage> {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              // Back arrow
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(
@@ -125,7 +124,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              // Main content
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(
@@ -176,7 +174,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                    // Login Form
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 20),
                       padding: const EdgeInsets.all(24),

@@ -1,4 +1,4 @@
-/// 🌈 Custom Google Map Style (soft peach + purple tones)
+
 const String mapStyle = '''
 [
   {
