@@ -16,7 +16,7 @@ import 'package:kindlink/features/home/home.dart';
 import 'package:kindlink/features/admin/admin_home.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialize();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
