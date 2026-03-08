@@ -1,0 +1,36 @@
+name: Flutter CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  flutter-ci:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: kindlink_app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.19.0"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run Linter
+        run: flutter analyze
+
+      - name: Run Unit Tests
+        run: flutter test
+
+      - name: Build project
+        run: flutter build web

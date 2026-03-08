@@ -76,20 +76,6 @@ class AboutSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 80),
 
-                    
-                    Container(
-                      width: double.infinity,
-                      color: const Color(0xFF2E2E2E),
-                      padding: const EdgeInsets.all(20),
-                      child: Text(
-                        "© 2025 KindLink • Made in Bulgaria",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
