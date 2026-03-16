@@ -16,12 +16,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4          # updated to latest major version (v3 → v4 is fine & more secure)
+        uses: actions/checkout@v4          
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ""         # Feb 2026 stable – includes Dart 3.9.x → solves the conflict
+          flutter-version: "3.27.4"    
           channel: stable
 
       - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
 
       - name: Run Unit Tests
-        run: flutter test || true
+        run: flutter test
 
       - name: Build project
         run: flutter build web --no-wasm-dry-run || true
