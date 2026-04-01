@@ -9,63 +9,101 @@ class Navbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(40),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 20 : 40,
-              vertical: 18,
+              vertical: 16,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F0E8),
+              color: const Color(0xFF1C1D29).withOpacity(0.85),
               borderRadius: BorderRadius.circular(40),
               border: Border.all(
-                color: const Color.fromARGB(255, 23, 11, 11).withOpacity(0.1), 
+                color: Colors.white.withOpacity(0.08),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withOpacity(0.3),
                   blurRadius: 40,
-                  offset: const Offset(0, 20),
+                  offset: const Offset(0, 16),
                 ),
               ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "KindLink",
-                  style: GoogleFonts.poppins(
-                    fontSize: isMobile ? 22 : 28,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF14151F),
-                    letterSpacing: -0.5,
+                // Logo
+                GestureDetector(
+                  onTap: () => Navigator.pushNamedAndRemoveUntil(
+                      context, '/', (_) => false),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF7B74FF), Color(0xFF5B54E6)],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.volunteer_activism,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "KindLink",
+                        style: GoogleFonts.poppins(
+                          fontSize: isMobile ? 20 : 24,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
                 if (!isMobile)
                   Row(
                     children: [
                       _navItem(context, "Home", '/'),
                       _navItem(context, "About", '/about'),
                       _navItem(context, "Contact", '/contact'),
-                      const SizedBox(width: 30),
-                      _ctaButton(context, "Login", '/login'),
+                      const SizedBox(width: 24),
+                      _outlinedButton(context, "Log In", '/login'),
+                      const SizedBox(width: 12),
+                      _ctaButton(context, "Sign Up", '/signup'),
                     ],
                   )
                 else
-                 Builder(
-                  builder: (context) => GestureDetector(
-                    onTap: () => _showMobileMenu(context),
-                    child: const Icon(
-                      Icons.menu_rounded,
-                      color:Color(0xFF14151F),
-                      size: 28,
+                  Builder(
+                    builder: (context) => GestureDetector(
+                      onTap: () => _showMobileMenu(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.08),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.12),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.menu_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -74,17 +112,16 @@ class Navbar extends StatelessWidget {
     );
   }
 
-  static Widget _navItem(
-      BuildContext context, String title, String route) {
+  static Widget _navItem(BuildContext context, String title, String route) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, route),
         child: Text(
           title,
           style: GoogleFonts.poppins(
-            fontSize: 16,
-            color: Colors.white.withOpacity(0.8),
+            fontSize: 15,
+            color: Colors.white.withOpacity(0.7),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -92,13 +129,35 @@ class Navbar extends StatelessWidget {
     );
   }
 
-  static Widget _ctaButton(
+  static Widget _outlinedButton(
       BuildContext context, String text, String route) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.18),
+          ),
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            color: Colors.white.withOpacity(0.85),
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget _ctaButton(BuildContext context, String text, String route) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, route),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF7B74FF), Color(0xFF5B54E6)],
@@ -106,9 +165,9 @@ class Navbar extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF6C63FF).withOpacity(0.5),
-              blurRadius: 25,
-              offset: const Offset(0, 10),
+              color: const Color(0xFF6C63FF).withOpacity(0.45),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -117,6 +176,7 @@ class Navbar extends StatelessWidget {
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
         ),
       ),
@@ -124,117 +184,124 @@ class Navbar extends StatelessWidget {
   }
 
   static void _showMobileMenu(BuildContext context) {
-  showGeneralDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierLabel: "Close menu",
-    barrierColor: Colors.black.withOpacity(0.35),
-    transitionDuration: const Duration(milliseconds: 400),
-    pageBuilder: (context, anim1, anim2) {
-      return Align(
-        alignment: Alignment.centerRight,
-        child: Material(
-          color: Colors.transparent,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.82,
-            height: double.infinity,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(36),
-                bottomLeft: Radius.circular(36),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.white.withOpacity(0.10),
-                        Colors.white.withOpacity(0.03),
-                      ],
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Close menu",
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 350),
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.centerRight,
+          child: Material(
+            color: Colors.transparent,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: double.infinity,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  bottomLeft: Radius.circular(32),
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1C1D29).withOpacity(0.97),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.1),
+                        width: 1,
+                      ),
                     ),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.15),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 50),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // CLOSE BUTTON
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white.withOpacity(0.08),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.15),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 28, vertical: 40),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFF7B74FF),
+                                            Color(0xFF5B54E6)
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.volunteer_activism,
+                                        color: Colors.white,
+                                        size: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "KindLink",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white.withOpacity(0.08),
+                                    ),
+                                    child: const Icon(
+                                      Icons.close_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                   ),
                                 ),
-                                child: const Icon(
-                                  Icons.close_rounded,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
+                              ],
                             ),
-                          ),
-
-                          const SizedBox(height: 60),
-
-                          _premiumMobileItem(
-                            context,
-                            icon: Icons.home_rounded,
-                            title: "Home",
-                            route: '/',
-                          ),
-                          const SizedBox(height: 24),
-
-                          // SIGN UP — Primary Action
-                          _premiumAuthItem(
-                            context,
-                            icon: Icons.person_add_alt_1_rounded,
-                            title: "Sign Up",
-                            route: '/signup',
-                            
-                          ),
-                          const SizedBox(height: 24),
-
-                          _premiumAuthItem(
-                            context,
-                            icon: Icons.login_rounded,
-                            title: "Log In",
-                            route: '/login',
-                            
-                          ),
-                          const SizedBox(height: 24),
-
-                          _premiumMobileItem(
-                            context,
-                            icon: Icons.info_outline_rounded,
-                            title: "About",
-                            route: '/about',
-                          ),
-                          const SizedBox(height: 24),
-
-                          _premiumMobileItem(
-                            context,
-                            icon: Icons.mail_outline_rounded,
-                            title: "Contact",
-                            route: '/contact',
-                          ),
-                        
-                        ],
+                            const SizedBox(height: 48),
+                            _mobileNavItem(context,
+                                icon: Icons.home_rounded,
+                                title: "Home",
+                                route: '/'),
+                            const SizedBox(height: 12),
+                            _mobileNavItem(context,
+                                icon: Icons.info_outline_rounded,
+                                title: "About",
+                                route: '/about'),
+                            const SizedBox(height: 12),
+                            _mobileNavItem(context,
+                                icon: Icons.mail_outline_rounded,
+                                title: "Contact",
+                                route: '/contact'),
+                            const SizedBox(height: 32),
+                            Divider(color: Colors.white.withOpacity(0.08)),
+                            const SizedBox(height: 24),
+                            _mobileAuthItem(context,
+                                icon: Icons.login_rounded,
+                                title: "Log In",
+                                route: '/login',
+                                outlined: true),
+                            const SizedBox(height: 12),
+                            _mobileAuthItem(context,
+                                icon: Icons.person_add_alt_1_rounded,
+                                title: "Sign Up",
+                                route: '/signup',
+                                outlined: false),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -242,32 +309,64 @@ class Navbar extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      );
-    },
-    transitionBuilder: (context, animation, secondary, child) {
-      final curved =
-          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        );
+      },
+      transitionBuilder: (context, animation, secondary, child) {
+        final curved =
+            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position:
+                Tween(begin: const Offset(1, 0), end: Offset.zero).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
 
-      return FadeTransition(
-        opacity: curved,
-        child: SlideTransition(
-          position: Tween(
-            begin: const Offset(1, 0),
-            end: Offset.zero,
-          ).animate(curved),
-          child: child,
-        ),
-      );
-    },
-  );
-}
-
-static Widget _premiumMobileItem(
+  static Widget _mobileNavItem(
     BuildContext context, {
     required IconData icon,
     required String title,
     required String route,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, route);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white.withOpacity(0.05),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFF7B74FF), size: 20),
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withOpacity(0.85),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _mobileAuthItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String route,
+    required bool outlined,
   }) {
     return GestureDetector(
       onTap: () {
@@ -277,95 +376,39 @@ static Widget _premiumMobileItem(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         decoration: BoxDecoration(
+          gradient: outlined
+              ? null
+              : const LinearGradient(
+                  colors: [Color(0xFF7B74FF), Color(0xFF5B54E6)],
+                ),
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white.withOpacity(0.06),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.12),
-          ),
+          border: outlined
+              ? Border.all(color: Colors.white.withOpacity(0.15))
+              : null,
+          boxShadow: outlined
+              ? null
+              : [
+                  BoxShadow(
+                    color: const Color(0xFF6C63FF).withOpacity(0.4),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
         ),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF6C63FF).withOpacity(0.15),
-              ),
-              child: Icon(
-                icon,
-                color: const Color(0xFF7B74FF),
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 18),
+            Icon(icon,
+                color: outlined
+                    ? Colors.white.withOpacity(0.7)
+                    : Colors.white,
+                size: 20),
+            const SizedBox(width: 16),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 18,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
- 
- static Widget _premiumAuthItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String route,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, route);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 146, 140, 247),
-              Color(0xFFABA6F1),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF6C63FF).withOpacity(0.45),
-              blurRadius: 25,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.18),
-              ),
-              child: Icon(
-                icon,
-                size: 22,
-                color: const Color(0xFF14151F),
-              ),
-            ),
-            const SizedBox(width: 18),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF14151F),
-                letterSpacing: 0.5,
               ),
             ),
           ],
