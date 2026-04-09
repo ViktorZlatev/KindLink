@@ -19,7 +19,7 @@ void showVolunteerAcceptedPopup(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-        backgroundColor: Colors.white.withOpacity(0.97),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
@@ -52,7 +52,7 @@ void showVolunteerAcceptedPopup(
                 "$requesterName has accepted your offer.\nYou can now proceed to help.",
                 style: GoogleFonts.poppins(
                   fontSize: 15,
-                  color: Colors.black87,
+                  color: Colors.white.withOpacity(0.85),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -63,10 +63,10 @@ void showVolunteerAcceptedPopup(
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF6F0),
+                    color: const Color(0xFF1C1D29),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: const Color(0xFF6C63FF).withOpacity(0.15),
+                      color: const Color(0xFF6C63FF).withOpacity(0.25),
                     ),
                   ),
                   child: Column(
@@ -122,6 +122,7 @@ Widget _row(IconData icon, String text) {
           style: GoogleFonts.poppins(
             fontSize: 14,
             fontWeight: FontWeight.w500,
+            color: Colors.white.withOpacity(0.85),
           ),
         ),
       ),

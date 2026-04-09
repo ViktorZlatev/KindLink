@@ -19,7 +19,7 @@ void showVolunteerHelpPopup(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-        backgroundColor: Colors.white.withOpacity(0.97),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -29,8 +29,8 @@ void showVolunteerHelpPopup(
               Container(
                 height: 80,
                 width: 80,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEDE8FF),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C63FF).withOpacity(0.12),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -55,7 +55,7 @@ void showVolunteerHelpPopup(
 
               Text(
                 "$requesterName requested urgent help.",
-                style: GoogleFonts.poppins(fontSize: 15),
+                style: GoogleFonts.poppins(fontSize: 15, color: Colors.white.withOpacity(0.85)),
                 textAlign: TextAlign.center,
               ),
 
@@ -65,7 +65,7 @@ void showVolunteerHelpPopup(
                 "Status: $status",
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: Colors.black54,
+                  color: Colors.white.withOpacity(0.55),
                 ),
               ),
 
@@ -98,7 +98,7 @@ void showVolunteerHelpPopup(
                       "Reject",
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: Colors.black54,
+                        color: Colors.white.withOpacity(0.55),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

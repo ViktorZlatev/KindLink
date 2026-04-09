@@ -25,7 +25,7 @@ void showEmergencyDialog(
       return Dialog(
 
         insetPadding: const EdgeInsets.symmetric(horizontal: 30),
-        backgroundColor: Colors.white.withOpacity(0.95),
+        backgroundColor: const Color(0xFF13131A),
 
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
@@ -83,7 +83,7 @@ void showEmergencyDialog(
                                 point,
                                 style: GoogleFonts.poppins(
                                   fontSize: 15,
-                                  color: Colors.black87,
+                                  color: Colors.white.withOpacity(0.85),
                                   height: 1.35,
                                 ),
                               ),
@@ -106,7 +106,7 @@ void showEmergencyDialog(
                       'Cancel',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
-                        color: Colors.black54,
+                        color: Colors.white.withOpacity(0.5),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

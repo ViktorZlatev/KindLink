@@ -12,7 +12,7 @@ void showVolunteerLocationPermissionDialog(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-        backgroundColor: Colors.white.withOpacity(0.95),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
@@ -45,7 +45,7 @@ void showVolunteerLocationPermissionDialog(
                 text: TextSpan(
                   style: GoogleFonts.poppins(
                     fontSize: 15,
-                    color: Colors.black87,
+                    color: Colors.white.withOpacity(0.85),
                   ),
                   children: const [
                     TextSpan(text: "Since you're now a volunteer, "),
@@ -75,8 +75,8 @@ void showVolunteerLocationPermissionDialog(
                     },
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8C9EFF), 
-                      foregroundColor: Colors.white,            
+                      backgroundColor: const Color(0xFF6C63FF),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22,
                         vertical: 12,
@@ -90,7 +90,7 @@ void showVolunteerLocationPermissionDialog(
                       "Allow",
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: const Color.fromARGB(255, 92, 92, 94),
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

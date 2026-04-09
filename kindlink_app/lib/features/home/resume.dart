@@ -15,7 +15,7 @@ void showHelpRequestDialog(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 40),
-        backgroundColor: Colors.white.withOpacity(0.96),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
@@ -61,8 +61,9 @@ void showHelpRequestDialog(
 
                   Container(
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255,243,241,244),
+                      color: const Color(0xFF1C1D29),
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
 
                     child: Column(
@@ -78,18 +79,20 @@ void showHelpRequestDialog(
                           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: const Color(0xFF13131A),
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
-                              color: Color(0xFF6C63FF).withOpacity(0.15),
+                              color: const Color(0xFF6C63FF).withOpacity(0.25),
                             ),
                           ),
                           child: isEditing
                             ? TextFormField(
                                 initialValue: value.toString(),
                                 onChanged: (v) => editableData[key] = v.trim(),
+                                style: GoogleFonts.poppins(color: Colors.white),
                                 decoration: InputDecoration(
                                   labelText: key[0].toUpperCase() + key.substring(1),
+                                  labelStyle: GoogleFonts.poppins(color: const Color(0xFF8B83FF)),
                                   border: InputBorder.none,
                                 ),
                               )
@@ -108,7 +111,7 @@ void showHelpRequestDialog(
                                     value.toString().isNotEmpty
                                       ? value.toString()
                                       : "No information",
-                                    style: GoogleFonts.poppins(fontSize: 14),
+                                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.white.withOpacity(0.75)),
                                   ),
                                 ],
                               ),
@@ -125,7 +128,7 @@ void showHelpRequestDialog(
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text("Cancel",
-                          style: GoogleFonts.poppins(color: Colors.black54),
+                          style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.55)),
                         ),
                       ),
                       ElevatedButton(

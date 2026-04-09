@@ -17,7 +17,7 @@ void showAcceptedPopupUser(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-        backgroundColor: Colors.white.withOpacity(0.97),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -68,7 +68,7 @@ void showAcceptedPopupUser(
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black54,
+                        color: Colors.white.withOpacity(0.55),
                       ),
                     ),
                   ),

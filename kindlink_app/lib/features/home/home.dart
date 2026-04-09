@@ -333,7 +333,7 @@ class _HomePageState extends State<Home> {
     final isMobile = size.width < 700;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF5EF),
+      backgroundColor: const Color(0xFF0D0D12),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
@@ -365,10 +365,13 @@ class _HomePageState extends State<Home> {
                       vertical: 18,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: const Color(0xFF13131A).withOpacity(0.95),
+                      border: Border(
+                        bottom: BorderSide(color: Colors.white.withOpacity(0.06)),
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: const Color(0xFF6C63FF).withOpacity(0.1),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -382,7 +385,7 @@ class _HomePageState extends State<Home> {
                           style: GoogleFonts.poppins(
                             fontSize: isMobile ? 20 : 24,
                             fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 47, 43, 114),
+                            color: Colors.white,
                           ),
                         ),
 
@@ -455,8 +458,11 @@ class _HomePageState extends State<Home> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 14, vertical: 7),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFE6D8FF),
+                                      color: const Color(0xFF6C63FF).withOpacity(0.15),
                                       borderRadius: BorderRadius.circular(30),
+                                      border: Border.all(
+                                        color: const Color(0xFF6C63FF).withOpacity(0.3),
+                                      ),
                                     ),
                                     child: Row(
                                       children: [
@@ -479,8 +485,8 @@ class _HomePageState extends State<Home> {
                                 : ElevatedButton(
                                     onPressed: _becomeVolunteer,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: const Color(0xFF6C63FF),
+                                      backgroundColor: const Color(0xFF1C1D29),
+                                      foregroundColor: const Color(0xFF8B83FF),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 10, horizontal: 16),
                                       shape: RoundedRectangleBorder(
@@ -531,8 +537,8 @@ class _HomePageState extends State<Home> {
                           onPressed:
                               _surveyCompleted ? _requestHelp : _fillSurvey,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF6C63FF),
+                            backgroundColor: const Color(0xFF13131A),
+                            foregroundColor: const Color(0xFF8B83FF),
                             padding: EdgeInsets.symmetric(
                                 vertical: _surveyCompleted ? 21 : 12),
                             shape: RoundedRectangleBorder(

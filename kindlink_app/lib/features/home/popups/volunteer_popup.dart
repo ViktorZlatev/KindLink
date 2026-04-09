@@ -37,7 +37,7 @@ Future<void> showVolunteerPopupCustom(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-        backgroundColor: Colors.white.withOpacity(0.95),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
 
         child: Padding(
@@ -49,7 +49,7 @@ Future<void> showVolunteerPopupCustom(
                 height: 80,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: Color(0xFFEDE8FF),
+                  color: const Color(0xFF6C63FF).withOpacity(0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.volunteer_activism,
@@ -83,10 +83,10 @@ Future<void> showVolunteerPopupCustom(
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Color(0xFFFFF6F0),
+                  color: const Color(0xFF1C1D29),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: Color(0xFF6C63FF).withOpacity(0.15),
+                    color: const Color(0xFF6C63FF).withOpacity(0.25),
                   ),
                 ),
                 child: Column(
@@ -110,7 +110,7 @@ Future<void> showVolunteerPopupCustom(
                   "Close",
                   style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.black54,
+                    color: Colors.white.withOpacity(0.55),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -134,6 +134,7 @@ Widget _infoRow(IconData ic, String text) {
           style: GoogleFonts.poppins(
             fontSize: 15,
             fontWeight: FontWeight.w500,
+            color: Colors.white.withOpacity(0.85),
           ),
         ),
       ),

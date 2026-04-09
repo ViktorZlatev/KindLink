@@ -71,11 +71,12 @@ class _AdminHomeState extends State<AdminHome> {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF13131A),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: const Color(0xFF6C63FF).withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           )
@@ -100,7 +101,7 @@ class _AdminHomeState extends State<AdminHome> {
                 style: GoogleFonts.poppins(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF6C63FF),
+                  color: const Color(0xFF8B83FF),
                 ),
               ),
               Text(
@@ -108,7 +109,7 @@ class _AdminHomeState extends State<AdminHome> {
                 style: GoogleFonts.poppins(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -153,7 +154,7 @@ class _AdminHomeState extends State<AdminHome> {
     final isMobile = size.width < 700;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF5EF),
+      backgroundColor: const Color(0xFF0D0D12),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
@@ -165,10 +166,13 @@ class _AdminHomeState extends State<AdminHome> {
                       vertical: 18,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.92),
+                      color: const Color(0xFF13131A),
+                      border: Border(
+                        bottom: BorderSide(color: Colors.white.withOpacity(0.06)),
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: const Color(0xFF6C63FF).withOpacity(0.1),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

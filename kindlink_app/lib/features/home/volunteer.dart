@@ -25,7 +25,7 @@ void showVolunteerForm(
     builder: (context) {
       return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-        backgroundColor: Colors.white.withOpacity(0.95),
+        backgroundColor: const Color(0xFF13131A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
@@ -101,7 +101,7 @@ void showVolunteerForm(
                             "Cancel",
                             style: GoogleFonts.poppins(
                               fontSize: 16,
-                              color: Colors.black54,
+                              color: Colors.white.withOpacity(0.55),
                             ),
                           ),
                         ),
@@ -186,14 +186,25 @@ Widget _field(
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             fontSize: 16,
+            color: Colors.white.withOpacity(0.85),
           ),
         ),
         SizedBox(height: 6),
         TextField(
           maxLines: maxLines,
           controller: controller,
+          style: GoogleFonts.poppins(color: Colors.white),
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            filled: true,
+            fillColor: const Color(0xFF0D0D12),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
+            ),
             contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           ),
         ),
