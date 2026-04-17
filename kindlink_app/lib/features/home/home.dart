@@ -240,8 +240,6 @@ class _HomePageState extends State<Home> {
       context,
       surveyCompleted: _surveyCompleted,
       onConfirm: () async {
-        Navigator.pop(context); 
-
         await HelpRequestService.sendImmediateHelpRequest(
           onError: (msg) {
             if (!mounted) return;

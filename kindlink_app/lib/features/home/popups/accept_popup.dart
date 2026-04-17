@@ -61,6 +61,7 @@ void showAcceptedPopupUser(
                         "currentVolunteerId": null,
                         "acceptedVolunteerId": null,
                         "acceptedAt": null,
+                        "userNotified": false,
                       });
                     },
                     child: Text(

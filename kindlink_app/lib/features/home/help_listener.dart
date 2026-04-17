@@ -73,12 +73,11 @@ class HelpListenerService {
     }
 
     // REQUESTER LISTENER
-   
+
     if (isUser) {
       _sub = FirebaseFirestore.instance
           .collection("help_requests")
           .where("userId", isEqualTo: currentUser.uid)
-          .orderBy("createdAt", descending: true)
           .snapshots()
           .listen((snapshot) {
         for (final change in snapshot.docChanges) {
@@ -90,8 +89,14 @@ class HelpListenerService {
           final doc = change.doc;
           final data = doc.data() ?? <String, dynamic>{};
 
-          if (data["status"] == "pending") {
+          if (data["status"] == "pending" &&
+              data["userNotified"] != true) {
             onVolunteerPendingForUser(doc.id, data);
+
+            FirebaseFirestore.instance
+                .collection("help_requests")
+                .doc(doc.id)
+                .update({"userNotified": true});
           }
         }
       }, onError: (e) {
