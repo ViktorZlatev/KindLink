@@ -470,7 +470,7 @@ class _HomePageState extends State<Home> {
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
-                                          "Volunteer",
+                                          "Helper",
                                           style: GoogleFonts.poppins(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
@@ -495,7 +495,7 @@ class _HomePageState extends State<Home> {
                                       elevation: 0,
                                     ),
                                     child: Text(
-                                      'Volunteer',
+                                      'Join',
                                       style: GoogleFonts.poppins(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,

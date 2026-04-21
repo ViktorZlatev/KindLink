@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class HelpListenerService {
   StreamSubscription<QuerySnapshot>? _sub;
+  final Set<String> _shownRequestIds = {};
 
   void startListening({
     required bool isVolunteer,
@@ -20,6 +21,7 @@ class HelpListenerService {
         onVolunteerPendingForUser,
   }) {
     _sub?.cancel();
+    _shownRequestIds.clear();
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
@@ -46,23 +48,25 @@ class HelpListenerService {
           final data = doc.data() ?? <String, dynamic>{};
           final status = data["status"];
 
-          if (status == "awaiting_volunteer") {
+          if (status == "awaiting_volunteer" &&
+              !_shownRequestIds.contains(doc.id)) {
+            _shownRequestIds.add(doc.id);
             onNewRequest(doc.id, data);
             continue;
           }
 
           if (status == "accepted" &&
               data["acceptedVolunteerId"] == currentUser.uid &&
-              data["volunteerNotified"] != true) {
-
+              data["volunteerNotified"] != true &&
+              !_shownRequestIds.contains("accepted_${doc.id}")) {
+            _shownRequestIds.add("accepted_${doc.id}");
             onVolunteerHelpAccepted(doc.id, data);
 
             FirebaseFirestore.instance
                 .collection("help_requests")
                 .doc(doc.id)
-                .update({
-              "volunteerNotified": true,
-            });
+                .update({"volunteerNotified": true})
+                .catchError((e) => debugPrint("volunteerNotified update failed: $e"));
           }
         }
       }, onError: (e) {
@@ -90,13 +94,16 @@ class HelpListenerService {
           final data = doc.data() ?? <String, dynamic>{};
 
           if (data["status"] == "pending" &&
-              data["userNotified"] != true) {
+              data["userNotified"] != true &&
+              !_shownRequestIds.contains("pending_${doc.id}")) {
+            _shownRequestIds.add("pending_${doc.id}");
             onVolunteerPendingForUser(doc.id, data);
 
             FirebaseFirestore.instance
                 .collection("help_requests")
                 .doc(doc.id)
-                .update({"userNotified": true});
+                .update({"userNotified": true})
+                .catchError((e) => debugPrint("userNotified update failed: $e"));
           }
         }
       }, onError: (e) {

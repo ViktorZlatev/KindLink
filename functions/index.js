@@ -58,7 +58,7 @@ exports.rankHelpRequest = onCall(
   async (request) => {
     const { auth, data } = request;
 
-    // Auth required
+    // Auth
     if (!auth) {
       throw new Error("Authentication required");
     }
@@ -97,40 +97,51 @@ exports.rankHelpRequest = onCall(
       .where("VolunteerStatus", "==", "approved")
       .get();
 
-    const volunteers = [];
+    // Fetch each volunteer's form
+    const volunteerEntries = await Promise.all(
+      usersSnap.docs.map(async (doc) => {
+        const u = doc.data();
+        const loc = u.location;
+        if (!loc || loc.lat == null || loc.lng == null) return null;
 
-    usersSnap.docs.forEach((doc) => {
-      const u = doc.data();
-      const loc = u.location;
+        let dist = 9999;
+        if (
+          requestData.location &&
+          requestData.location.lat != null &&
+          requestData.location.lng != null
+        ) {
+          dist = haversineKm(
+            Number(requestData.location.lat),
+            Number(requestData.location.lng),
+            Number(loc.lat),
+            Number(loc.lng)
+          );
+        }
 
-      if (!loc || loc.lat == null || loc.lng == null) return;
+        const formsSnap = await db
+          .collection("users")
+          .doc(doc.id)
+          .collection("volunteer_forms")
+          .orderBy("timestamp", "desc")
+          .limit(1)
+          .get();
+        const form = formsSnap.empty ? {} : formsSnap.docs[0].data();
 
-      let dist = 9999;
-      if (
-        requestData.location &&
-        requestData.location.lat != null &&
-        requestData.location.lng != null
-      ) {
-        dist = haversineKm(
-          Number(requestData.location.lat),
-          Number(requestData.location.lng),
-          Number(loc.lat),
-          Number(loc.lng)
-        );
-      }
+        return {
+          volunteerId: doc.id,
+          distanceKm: Math.round(dist * 100) / 100,
+          profile: {
+            username: u.username || null,
+            skills: form.skills || null,
+            experience: form.experience || null,
+            education: form.education || null,
+            motivation: form.motivation || null,
+          },
+        };
+      })
+    );
 
-      volunteers.push({
-        volunteerId: doc.id,
-        distanceKm: Math.round(dist * 100) / 100,
-        profile: {
-          username: u.username || null,
-          skills: u.skills || null,
-          experience: u.experience || null,
-          languages: u.languages || null,
-          notes: u.notes || null,
-        },
-      });
-    });
+    const volunteers = volunteerEntries.filter(Boolean);
 
     if (volunteers.length === 0) {
       await reqRef.update({
