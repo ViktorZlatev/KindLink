@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show consolidateHttpClientResponseBytes;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -17,6 +20,59 @@ class MapFunctions {
   StreamSubscription<QuerySnapshot>? _volunteerLocationStream;
 
   bool _isStreaming = false;
+
+  final Map<String, BitmapDescriptor> _markerIconCache = {};
+
+  Future<BitmapDescriptor> _buildCircularMarker(String imageUrl) async {
+    if (_markerIconCache.containsKey(imageUrl)) {
+      return _markerIconCache[imageUrl]!;
+    }
+    try {
+      final client = HttpClient();
+      final req = await client.getUrl(Uri.parse(imageUrl));
+      final res = await req.close();
+      final bytes = await consolidateHttpClientResponseBytes(res);
+      client.close();
+
+      const double size = 120;
+      final codec = await ui.instantiateImageCodec(
+          bytes, targetWidth: size.toInt(), targetHeight: size.toInt());
+      final frame = await codec.getNextFrame();
+      final srcImage = frame.image;
+
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder);
+
+      canvas.drawCircle(
+        const ui.Offset(size / 2, size / 2),
+        size / 2,
+        ui.Paint()..color = const ui.Color(0xFF6C63FF),
+      );
+
+      final clipPath = ui.Path()
+        ..addOval(ui.Rect.fromLTWH(4, 4, size - 8, size - 8));
+      canvas.clipPath(clipPath);
+
+      canvas.drawImageRect(
+        srcImage,
+        ui.Rect.fromLTWH(
+            0, 0, srcImage.width.toDouble(), srcImage.height.toDouble()),
+        const ui.Rect.fromLTWH(4, 4, size - 8, size - 8),
+        ui.Paint(),
+      );
+
+      final picture = recorder.endRecording();
+      final img = await picture.toImage(size.toInt(), size.toInt());
+      final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+
+      final descriptor =
+          BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+      _markerIconCache[imageUrl] = descriptor;
+      return descriptor;
+    } catch (_) {
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
+    }
+  }
 
   
   // SAVE SINGLE LOCATION - ALL USERS
@@ -130,38 +186,48 @@ class MapFunctions {
         .collection("users")
         .where("isVolunteer", isEqualTo: true)
         .snapshots()
-        .listen((snapshot) {
-      final Map<String, Marker> markers = {};
-
-      for (final doc in snapshot.docs) {
+        .listen((snapshot) async {
+      final futures = snapshot.docs.map((doc) async {
         final data = doc.data();
         final loc = data["location"];
-        if (loc == null) continue;
+        if (loc == null) return null;
 
         final lat = (loc["lat"] as num?)?.toDouble();
         final lng = (loc["lng"] as num?)?.toDouble();
-        if (lat == null || lng == null) continue;
+        if (lat == null || lng == null) return null;
 
         final markerId = "${doc.id}_${lat}_${lng}";
+        final photoUrl = data["profilePhotoUrl"] as String?;
 
-        markers[markerId] = Marker(
-          markerId: MarkerId(markerId),
-          position: LatLng(lat, lng),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueViolet,
+        final icon = (photoUrl != null && photoUrl.isNotEmpty)
+            ? await _buildCircularMarker(photoUrl)
+            : BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueViolet);
+
+        return MapEntry(
+          markerId,
+          Marker(
+            markerId: MarkerId(markerId),
+            position: LatLng(lat, lng),
+            icon: icon,
+            onTap: () {
+              onMarkerTap(
+                name: data["username"] ?? "Volunteer",
+                lat: lat,
+                lng: lng,
+                updatedAt: loc["updatedAt"],
+                userId: doc.id,
+              );
+            },
           ),
-          onTap: () {
-            onMarkerTap(
-              name: data["username"] ?? "Volunteer",
-              lat: lat,
-              lng: lng,
-              updatedAt: loc["updatedAt"],
-              userId: doc.id,
-            );
-          },
         );
-      }
+      });
 
+      final results = await Future.wait(futures);
+      final Map<String, Marker> markers = {};
+      for (final entry in results) {
+        if (entry != null) markers[entry.key] = entry.value;
+      }
       onMarkersUpdated(markers);
     });
   }

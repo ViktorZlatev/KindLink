@@ -2,13 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void showAcceptedPopupUser(
+Future<void> showAcceptedPopupUser(
   BuildContext context, {
   required String requestId,
   required Map<String, dynamic> data,
-}) {
+}) async {
   final volunteerName = data["volunteerName"] ?? "A volunteer";
-  final volunteerId = data["volunteerId"]; 
+  final volunteerId = data["volunteerId"];
+
+  String? volunteerPhotoUrl;
+  if (volunteerId != null) {
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(volunteerId)
+          .get();
+      volunteerPhotoUrl = snap.data()?["profilePhotoUrl"];
+    } catch (_) {}
+  }
 
   showDialog(
     context: context,
@@ -24,10 +35,17 @@ void showAcceptedPopupUser(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.volunteer_activism,
-                size: 50,
-                color: Color(0xFF6C63FF),
+              CircleAvatar(
+                radius: 36,
+                backgroundColor:
+                    const Color(0xFF6C63FF).withOpacity(0.12),
+                backgroundImage: volunteerPhotoUrl != null
+                    ? NetworkImage(volunteerPhotoUrl)
+                    : null,
+                child: volunteerPhotoUrl == null
+                    ? const Icon(Icons.volunteer_activism,
+                        size: 38, color: Color(0xFF6C63FF))
+                    : null,
               ),
 
               const SizedBox(height: 16),

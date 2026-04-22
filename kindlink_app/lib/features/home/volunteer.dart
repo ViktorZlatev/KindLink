@@ -19,6 +19,9 @@ void showVolunteerForm(
   File? selectedFile;
   String? uploadedFileUrl;
 
+  File? profilePhoto;
+  String? profilePhotoUrl;
+
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -47,6 +50,45 @@ void showVolunteerForm(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF6C63FF),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    GestureDetector(
+                      onTap: () async {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.image,
+                        );
+                        if (result != null && result.files.single.path != null) {
+                          setState(() {
+                            profilePhoto = File(result.files.single.path!);
+                          });
+                        }
+                      },
+                      child: CircleAvatar(
+                        radius: 48,
+                        backgroundColor: const Color(0xFF1C1D29),
+                        backgroundImage: profilePhoto != null
+                            ? FileImage(profilePhoto!)
+                            : null,
+                        child: profilePhoto == null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.add_a_photo,
+                                      color: Color(0xFF6C63FF), size: 28),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Photo",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      color: Color(0xFF6C63FF),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : null,
                       ),
                     ),
 
@@ -111,6 +153,21 @@ void showVolunteerForm(
                             final user = FirebaseAuth.instance.currentUser;
                             if (user == null) return;
 
+                            try {
+                            if (profilePhoto != null) {
+                              final ref = FirebaseStorage.instance
+                                  .ref()
+                                  .child("volunteer_photos/${user.uid}/profile_photo.jpg");
+                              await ref.putFile(profilePhoto!);
+                              profilePhotoUrl = await ref.getDownloadURL();
+
+                              await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(user.uid)
+                                  .set({"profilePhotoUrl": profilePhotoUrl},
+                                      SetOptions(merge: true));
+                            }
+
                             if (selectedFile != null) {
                               final ref = FirebaseStorage.instance
                                 .ref()
@@ -127,6 +184,7 @@ void showVolunteerForm(
                               "skills": skillsController.text.trim(),
                               "motivation": motivationController.text.trim(),
                               "certificateUrl": uploadedFileUrl,
+                              "profilePhotoUrl": profilePhotoUrl,
                               "timestamp": FieldValue.serverTimestamp(),
                               "status": "pending",
                             };
@@ -139,6 +197,14 @@ void showVolunteerForm(
 
                             Navigator.pop(context);
                             onConfirm(volunteerData);
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Submission failed: $e"),
+                                  backgroundColor: Colors.red.shade700,
+                                ),
+                              );
+                            }
                           },
 
                           style: ElevatedButton.styleFrom(

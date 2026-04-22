@@ -90,15 +90,6 @@ class _HomePageState extends State<Home> {
       },
     );
 
-    _activeRequestListener.start(
-      onChanged: ({String? requestId, String? status}) {
-        if (!mounted) return;
-        setState(() {
-          _activeRequestId = requestId;
-          _activeRequestStatus = status;
-        });
-      },
-    );
   }
 
   @override
@@ -142,6 +133,17 @@ class _HomePageState extends State<Home> {
       });
 
      
+      _activeRequestListener.start(
+        isVolunteer: _isVolunteer,
+        onChanged: ({String? requestId, String? status}) {
+          if (!mounted) return;
+          setState(() {
+            _activeRequestId = requestId;
+            _activeRequestStatus = status;
+          });
+        },
+      );
+
       if (_isVolunteer) {
         await mapFunctions.startVolunteerLocationUpdates(
           onError: (msg) => showTopMessage(context, msg),

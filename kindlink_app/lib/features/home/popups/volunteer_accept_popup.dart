@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void showVolunteerAcceptedPopup(
   BuildContext context, {
@@ -9,8 +10,8 @@ void showVolunteerAcceptedPopup(
   final requesterName = data["username"] ?? "The requester";
 
   final location = data["location"] as Map<String, dynamic>?;
-  final lat = location?["lat"];
-  final lng = location?["lng"];
+  final lat = location?["lat"] != null ? double.tryParse(location!["lat"].toString()) : null;
+  final lng = location?["lng"] != null ? double.tryParse(location!["lng"].toString()) : null;
 
   showDialog(
     context: context,
@@ -60,21 +61,25 @@ void showVolunteerAcceptedPopup(
               const SizedBox(height: 20),
 
               if (lat != null && lng != null)
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1C1D29),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: const Color(0xFF6C63FF).withOpacity(0.25),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    height: 180,
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(lat, lng),
+                        zoom: 15,
+                      ),
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId("requester"),
+                          position: LatLng(lat, lng),
+                        ),
+                      },
+                      zoomControlsEnabled: false,
+                      myLocationButtonEnabled: false,
+                      liteModeEnabled: true,
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      _row(Icons.location_on, "Latitude: $lat"),
-                      const SizedBox(height: 6),
-                      _row(Icons.location_on_outlined, "Longitude: $lng"),
-                    ],
                   ),
                 ),
 
@@ -108,24 +113,5 @@ void showVolunteerAcceptedPopup(
         ),
       );
     },
-  );
-}
-
-Widget _row(IconData icon, String text) {
-  return Row(
-    children: [
-      Icon(icon, color: const Color(0xFF6C63FF)),
-      const SizedBox(width: 8),
-      Expanded(
-        child: Text(
-          text,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.85),
-          ),
-        ),
-      ),
-    ],
   );
 }

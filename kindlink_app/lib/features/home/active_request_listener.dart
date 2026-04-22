@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class ActiveHelpRequestListener {
   StreamSubscription<QuerySnapshot>? _subscription;
 
   void start({
+    required bool isVolunteer,
     required void Function({
       String? requestId,
       String? status,
@@ -16,19 +18,14 @@ class ActiveHelpRequestListener {
 
     _subscription?.cancel();
 
+    // Use a single-field equality filter based on role to avoid
+    // composite index requirements from Filter.or() + whereIn.
+    final field = isVolunteer ? "acceptedVolunteerId" : "userId";
+
     _subscription = FirebaseFirestore.instance
         .collection("help_requests")
-        .where("status", whereIn: [
-          "accepted",
-          "closed_once",
-          "resolved",
-        ])
-        .where(
-          Filter.or(
-            Filter("userId", isEqualTo: user.uid),
-            Filter("acceptedVolunteerId", isEqualTo: user.uid),
-          ),
-        )
+        .where(field, isEqualTo: user.uid)
+        .where("status", whereIn: ["accepted", "closed_once"])
         .limit(1)
         .snapshots()
         .listen((snapshot) {
@@ -38,17 +35,10 @@ class ActiveHelpRequestListener {
           }
 
           final doc = snapshot.docs.first;
-          final status = doc.data()["status"];
-
-          if (status == "resolved") {
-            onChanged(requestId: null, status: null);
-            return;
-          }
-
-          onChanged(
-            requestId: doc.id,
-            status: status,
-          );
+          onChanged(requestId: doc.id, status: doc.data()["status"]);
+        }, onError: (e) {
+          debugPrint("ActiveRequestListener error: $e");
+          onChanged(requestId: null, status: null);
         });
   }
 

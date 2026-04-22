@@ -11,6 +11,7 @@ Future<void> showVolunteerPopupCustom(
   String name = "Unknown";
   String experience = "Not provided";
   String skills = "Not provided";
+  String? profilePhotoUrl;
 
   try {
     final forms = await FirebaseFirestore.instance
@@ -26,6 +27,7 @@ Future<void> showVolunteerPopupCustom(
       name = data["name"] ?? name;
       experience = data["experience"] ?? experience;
       skills = data["skills"] ?? skills;
+      profilePhotoUrl = data["profilePhotoUrl"];
     }
   } catch (_) {}
 
@@ -45,15 +47,17 @@ Future<void> showVolunteerPopupCustom(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C63FF).withOpacity(0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.volunteer_activism,
-                    size: 42, color: Color(0xFF6C63FF)),
+              CircleAvatar(
+                radius: 40,
+                backgroundColor:
+                    const Color(0xFF6C63FF).withOpacity(0.12),
+                backgroundImage: profilePhotoUrl != null
+                    ? NetworkImage(profilePhotoUrl)
+                    : null,
+                child: profilePhotoUrl == null
+                    ? const Icon(Icons.volunteer_activism,
+                        size: 42, color: Color(0xFF6C63FF))
+                    : null,
               ),
 
               const SizedBox(height: 15),
