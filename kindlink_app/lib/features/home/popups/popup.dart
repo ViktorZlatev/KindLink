@@ -20,7 +20,7 @@ void showEmergencyDialog(
 
   showDialog(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     builder: (context) {
       return Dialog(
 

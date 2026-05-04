@@ -33,7 +33,7 @@ Future<void> showVolunteerPopupCustom(
 
   showDialog(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     barrierColor: Colors.black.withOpacity(0.4),
 
     builder: (context) {

@@ -20,6 +20,7 @@ class MapFunctions {
   StreamSubscription<QuerySnapshot>? _volunteerLocationStream;
 
   bool _isStreaming = false;
+  int _listenerGeneration = 0;
 
   final Map<String, BitmapDescriptor> _markerIconCache = {};
 
@@ -187,6 +188,8 @@ class MapFunctions {
         .where("isVolunteer", isEqualTo: true)
         .snapshots()
         .listen((snapshot) async {
+      final generation = ++_listenerGeneration;
+
       final futures = snapshot.docs.map((doc) async {
         final data = doc.data();
         final loc = data["location"];
@@ -196,7 +199,7 @@ class MapFunctions {
         final lng = (loc["lng"] as num?)?.toDouble();
         if (lat == null || lng == null) return null;
 
-        final markerId = "${doc.id}_${lat}_${lng}";
+        final markerId = doc.id;
         final photoUrl = data["profilePhotoUrl"] as String?;
 
         final icon = (photoUrl != null && photoUrl.isNotEmpty)
@@ -224,6 +227,10 @@ class MapFunctions {
       });
 
       final results = await Future.wait(futures);
+
+      // Discard result if a newer snapshot has already arrived
+      if (generation != _listenerGeneration) return;
+
       final Map<String, Marker> markers = {};
       for (final entry in results) {
         if (entry != null) markers[entry.key] = entry.value;

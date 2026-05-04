@@ -14,7 +14,7 @@ void showVolunteerHelpPopup(
 
   showDialog(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     barrierColor: Colors.black.withOpacity(0.45),
     builder: (context) {
       return Dialog(
