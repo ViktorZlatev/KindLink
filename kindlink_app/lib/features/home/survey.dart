@@ -48,7 +48,7 @@ void showSurvey(
                         style: GoogleFonts.poppins(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF6C63FF),
+                          color: const Color(0xFF6C63FF),
                         ),
                       ),
                     ),
@@ -61,7 +61,7 @@ void showSurvey(
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                         ),
                       ),
                     ),
@@ -107,21 +107,23 @@ void showSurvey(
                         if (result != null && result.files.single.path != null) {
                           selectedFile = File(result.files.single.path!);
                           setState(() {});
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("File selected!"),
-                              backgroundColor: Color(0xFF6C63FF),
-                            ),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("File selected!"),
+                                backgroundColor: Color(0xFF6C63FF),
+                              ),
+                            );
+                          }
                         }
                       },
-                      icon: Icon(Icons.upload_file, color: Color(0xFF6C63FF)),
+                      icon: const Icon(Icons.upload_file, color: Color(0xFF6C63FF)),
                       label: Text(
                         selectedFile == null
                           ? "Upload file (optional)"
                           : selectedFile!.path.split('/').last,
                         style: GoogleFonts.poppins(
-                          color: Color(0xFF6C63FF),
+                          color: const Color(0xFF6C63FF),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -139,7 +141,7 @@ void showSurvey(
                             "Cancel",
                             style: GoogleFonts.poppins(
                               fontSize: 16,
-                              color: Colors.white.withOpacity(0.55),
+                              color: Colors.white.withValues(alpha: 0.55),
                             ),
                           ),
                         ),
@@ -173,12 +175,13 @@ void showSurvey(
                               .collection("surveys")
                               .add(surveyData);
 
+                            if (!context.mounted) return;
                             Navigator.pop(context);
                             onConfirm(surveyData);
                           },
 
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF6C63FF),
+                            backgroundColor: const Color(0xFF6C63FF),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -219,28 +222,28 @@ Widget _question(
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           maxLines: maxLines,
           style: GoogleFonts.poppins(color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.poppins(color: Colors.white.withOpacity(0.35)),
+            hintStyle: GoogleFonts.poppins(color: Colors.white.withValues(alpha: 0.35)),
             filled: true,
             fillColor: const Color(0xFF0D0D12),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
         ),
       ],

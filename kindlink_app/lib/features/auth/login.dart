@@ -30,11 +30,17 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) Navigator.pushReplacementNamed(context, isAdmin ? '/admin_home' : '/home');
     } on FirebaseAuthException catch (e) {
       String msg;
-      if (e.code == 'user-not-found') msg = 'No account found with this email.';
-      else if (e.code == 'wrong-password') msg = 'Incorrect password.';
-      else if (e.code == 'invalid-email') msg = 'Invalid email format.';
-      else if (e.code == 'too-many-requests') msg = 'Too many attempts. Try again later.';
-      else msg = 'Login failed. Please check your credentials.';
+      if (e.code == 'user-not-found') {
+        msg = 'No account found with this email.';
+      } else if (e.code == 'wrong-password') {
+        msg = 'Incorrect password.';
+      } else if (e.code == 'invalid-email') {
+        msg = 'Invalid email format.';
+      } else if (e.code == 'too-many-requests') {
+        msg = 'Too many attempts. Try again later.';
+      } else {
+        msg = 'Login failed. Please check your credentials.';
+      }
       setState(() => _errorMessage = msg);
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -56,8 +62,8 @@ class _LoginPageState extends State<LoginPage> {
         child: Stack(
           children: [
             // Background glows
-            Positioned(top: -80, right: -80, child: _Glow(color: const Color(0xFF6C63FF), size: 400, opacity: 0.1)),
-            Positioned(bottom: -60, left: -60, child: _Glow(color: const Color(0xFF5B54E6), size: 300, opacity: 0.08)),
+            const Positioned(top: -80, right: -80, child: _Glow(color: Color(0xFF6C63FF), size: 400, opacity: 0.1)),
+            const Positioned(bottom: -60, left: -60, child: _Glow(color: Color(0xFF5B54E6), size: 300, opacity: 0.08)),
 
             Column(
               children: [
@@ -126,7 +132,7 @@ class _FormCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF6C63FF).withOpacity(0.25), Colors.white.withOpacity(0.03), Colors.transparent],
+          colors: [const Color(0xFF6C63FF).withValues(alpha: 0.25), Colors.white.withValues(alpha: 0.03), Colors.transparent],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -147,7 +153,7 @@ class _FormCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(colors: [Color(0xFF8B83FF), Color(0xFF5B54E6)]),
                     borderRadius: BorderRadius.circular(13),
-                    boxShadow: [BoxShadow(color: const Color(0xFF6C63FF).withOpacity(0.4), blurRadius: 20, offset: const Offset(0, 8))],
+                    boxShadow: [BoxShadow(color: const Color(0xFF6C63FF).withValues(alpha: 0.4), blurRadius: 20, offset: const Offset(0, 8))],
                   ),
                   child: const Icon(Icons.volunteer_activism, color: Colors.white, size: 22),
                 ),
@@ -155,7 +161,7 @@ class _FormCard extends StatelessWidget {
               const SizedBox(height: 24),
               Text("Welcome back", style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
               const SizedBox(height: 4),
-              Text("Sign in to your KindLink account", style: GoogleFonts.poppins(fontSize: 13, color: Colors.white.withOpacity(0.4))),
+              Text("Sign in to your KindLink account", style: GoogleFonts.poppins(fontSize: 13, color: Colors.white.withValues(alpha: 0.4))),
               const SizedBox(height: 28),
 
               if (errorMessage != null) ...[
@@ -163,9 +169,9 @@ class _FormCard extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.08),
+                    color: Colors.red.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.red.withOpacity(0.2)),
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
                   ),
                   child: Row(children: [
                     Icon(Icons.error_outline_rounded, color: Colors.red.shade400, size: 16),
@@ -176,17 +182,17 @@ class _FormCard extends StatelessWidget {
                 const SizedBox(height: 20),
               ],
 
-              _FieldLabel("Email address"),
+              const _FieldLabel("Email address"),
               const SizedBox(height: 7),
               _DarkField(controller: emailController, hint: "you@example.com", icon: Icons.email_outlined,
                 validator: (v) => v != null && v.contains('@') ? null : "Enter a valid email"),
               const SizedBox(height: 16),
 
-              _FieldLabel("Password"),
+              const _FieldLabel("Password"),
               const SizedBox(height: 7),
               _DarkField(
                 controller: passwordController, hint: "Your password", icon: Icons.lock_outline_rounded, obscure: !showPassword,
-                suffix: GestureDetector(onTap: onTogglePassword, child: Icon(showPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 17, color: Colors.white.withOpacity(0.3))),
+                suffix: GestureDetector(onTap: onTogglePassword, child: Icon(showPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 17, color: Colors.white.withValues(alpha: 0.3))),
                 validator: (v) => v != null && v.length >= 6 ? null : "Must be 6+ characters",
               ),
               const SizedBox(height: 28),
@@ -200,7 +206,7 @@ class _FormCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(colors: [Color(0xFF8B83FF), Color(0xFF5B54E6)]),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [BoxShadow(color: const Color(0xFF6C63FF).withOpacity(0.35), blurRadius: 20, offset: const Offset(0, 6))],
+                      boxShadow: [BoxShadow(color: const Color(0xFF6C63FF).withValues(alpha: 0.35), blurRadius: 20, offset: const Offset(0, 6))],
                     ),
                     child: Center(child: loading
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
@@ -212,7 +218,7 @@ class _FormCard extends StatelessWidget {
               Center(
                 child: GestureDetector(
                   onTap: onSignUp,
-                  child: RichText(text: TextSpan(style: GoogleFonts.poppins(fontSize: 13, color: Colors.white.withOpacity(0.4)), children: [
+                  child: RichText(text: TextSpan(style: GoogleFonts.poppins(fontSize: 13, color: Colors.white.withValues(alpha: 0.4)), children: [
                     const TextSpan(text: "No account yet? "),
                     TextSpan(text: "Create one", style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF8B83FF))),
                   ])),
@@ -234,7 +240,7 @@ class _Glow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     width: size, height: size,
-    decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [color.withOpacity(opacity), Colors.transparent])),
+    decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [color.withValues(alpha: opacity), Colors.transparent])),
   );
 }
 
@@ -242,7 +248,7 @@ class _FieldLabel extends StatelessWidget {
   final String text;
   const _FieldLabel(this.text);
   @override
-  Widget build(BuildContext context) => Text(text, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.5)));
+  Widget build(BuildContext context) => Text(text, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.5)));
 }
 
 class _DarkField extends StatelessWidget {
@@ -261,14 +267,14 @@ class _DarkField extends StatelessWidget {
       style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.poppins(color: Colors.white.withOpacity(0.2), fontSize: 14),
-        prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.25), size: 18),
+        hintStyle: GoogleFonts.poppins(color: Colors.white.withValues(alpha: 0.2), fontSize: 14),
+        prefixIcon: Icon(icon, color: Colors.white.withValues(alpha: 0.25), size: 18),
         suffixIcon: suffix != null ? Padding(padding: const EdgeInsets.only(right: 12), child: suffix) : null,
         suffixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 40),
         filled: true, fillColor: const Color(0xFF0D0D12),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.white.withOpacity(0.08), width: 1)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.white.withOpacity(0.08), width: 1)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1)),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5)),
         errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.red.shade700, width: 1)),
         focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.red.shade600, width: 1.5)),

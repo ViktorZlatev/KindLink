@@ -63,7 +63,7 @@ class _ContactSectionState extends State<ContactSection> {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              const Color(0xFF6C63FF).withOpacity(0.1),
+                              const Color(0xFF6C63FF).withValues(alpha: 0.1),
                               Colors.transparent,
                             ],
                           ),
@@ -136,7 +136,7 @@ class _ContactSectionState extends State<ContactSection> {
                                 : TextAlign.start,
                             style: GoogleFonts.poppins(
                               fontSize: isMobile ? 15 : 17,
-                              color: Colors.white.withOpacity(0.45),
+                              color: Colors.white.withValues(alpha: 0.45),
                               height: 1.75,
                             ),
                           ),
@@ -156,11 +156,11 @@ class _ContactSectionState extends State<ContactSection> {
                 child: Column(
                   children: [
                     // Info cards
-                    Wrap(
+                    const Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 16,
                       runSpacing: 16,
-                      children: const [
+                      children: [
                         _InfoCard(
                           icon: Icons.email_outlined,
                           label: "EMAIL",
@@ -190,8 +190,8 @@ class _ContactSectionState extends State<ContactSection> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF6C63FF).withOpacity(0.25),
-                            Colors.white.withOpacity(0.03),
+                            const Color(0xFF6C63FF).withValues(alpha: 0.25),
+                            Colors.white.withValues(alpha: 0.03),
                             Colors.transparent,
                           ],
                           begin: Alignment.topLeft,
@@ -228,7 +228,7 @@ class _ContactSectionState extends State<ContactSection> {
                                       "We typically reply within 24 hours.",
                                       style: GoogleFonts.poppins(
                                         fontSize: 13,
-                                        color: Colors.white.withOpacity(0.4),
+                                        color: Colors.white.withValues(alpha: 0.4),
                                       ),
                                     ),
                                     const SizedBox(height: 36),
@@ -285,7 +285,7 @@ class _ContactSectionState extends State<ContactSection> {
                                             boxShadow: [
                                               BoxShadow(
                                                 color: const Color(0xFF6C63FF)
-                                                    .withOpacity(0.35),
+                                                    .withValues(alpha: 0.35),
                                                 blurRadius: 24,
                                                 offset:
                                                     const Offset(0, 8),
@@ -323,7 +323,7 @@ class _ContactSectionState extends State<ContactSection> {
                 decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(
-                        color: Colors.white.withOpacity(0.06), width: 1),
+                        color: Colors.white.withValues(alpha: 0.06), width: 1),
                   ),
                 ),
                 child: Text(
@@ -331,7 +331,7 @@ class _ContactSectionState extends State<ContactSection> {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.25),
+                    color: Colors.white.withValues(alpha: 0.25),
                   ),
                 ),
               ),
@@ -358,7 +358,7 @@ class _ContactSectionState extends State<ContactSection> {
           style: GoogleFonts.poppins(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             letterSpacing: 0.5,
           ),
         ),
@@ -374,7 +374,7 @@ class _ContactSectionState extends State<ContactSection> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.poppins(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               fontSize: 14,
             ),
             prefixIcon: maxLines == 1
@@ -389,14 +389,14 @@ class _ContactSectionState extends State<ContactSection> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
@@ -439,7 +439,7 @@ class _SuccessState extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6C63FF).withOpacity(0.4),
+                  color: const Color(0xFF6C63FF).withValues(alpha: 0.4),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
@@ -462,7 +462,7 @@ class _SuccessState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               height: 1.6,
             ),
           ),
@@ -493,7 +493,7 @@ class _InfoCard extends StatelessWidget {
         color: const Color(0xFF13131A),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
           width: 1,
         ),
       ),
@@ -504,9 +504,9 @@ class _InfoCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: accent.withOpacity(0.12),
+              color: accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(11),
-              border: Border.all(color: accent.withOpacity(0.2), width: 1),
+              border: Border.all(color: accent.withValues(alpha: 0.2), width: 1),
             ),
             child: Icon(icon, size: 18, color: accent),
           ),
@@ -516,7 +516,7 @@ class _InfoCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 10,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.35),
+              color: Colors.white.withValues(alpha: 0.35),
               letterSpacing: 1.5,
             ),
           ),
@@ -526,7 +526,7 @@ class _InfoCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
             ),
           ),
         ],

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,6 +15,7 @@ import 'popups/volunteer_popup.dart';
 import 'popups/location.dart';
 import 'popups/help_popup.dart';
 import 'user_location.dart';
+import 'package:kindlink/features/auth/pn_service.dart';
 
 // features
 import 'survey.dart';
@@ -103,6 +103,8 @@ class _HomePageState extends State<Home> {
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    PushNotificationService.initAndSaveToken();
 
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -215,7 +217,7 @@ class _HomePageState extends State<Home> {
               });
             }
           } catch (e) {
-            print("⚠️ Failed to update isNotified in Firestore: $e");
+            debugPrint("⚠️ Failed to update isNotified in Firestore: $e");
           }
         });
       }
@@ -365,13 +367,13 @@ class _HomePageState extends State<Home> {
                       vertical: 18,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF13131A).withOpacity(0.95),
+                      color: const Color(0xFF13131A).withValues(alpha: 0.95),
                       border: Border(
-                        bottom: BorderSide(color: Colors.white.withOpacity(0.06)),
+                        bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6C63FF).withOpacity(0.1),
+                          color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -458,10 +460,10 @@ class _HomePageState extends State<Home> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 14, vertical: 7),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF6C63FF).withOpacity(0.15),
+                                      color: const Color(0xFF6C63FF).withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(30),
                                       border: Border.all(
-                                        color: const Color(0xFF6C63FF).withOpacity(0.3),
+                                        color: const Color(0xFF6C63FF).withValues(alpha: 0.3),
                                       ),
                                     ),
                                     child: Row(

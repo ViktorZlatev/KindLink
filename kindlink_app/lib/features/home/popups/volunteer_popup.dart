@@ -31,10 +31,11 @@ Future<void> showVolunteerPopupCustom(
     }
   } catch (_) {}
 
+  if (!context.mounted) return;
   showDialog(
     context: context,
     barrierDismissible: false,
-    barrierColor: Colors.black.withOpacity(0.4),
+    barrierColor: Colors.black.withValues(alpha: 0.4),
 
     builder: (context) {
       return Dialog(
@@ -50,7 +51,7 @@ Future<void> showVolunteerPopupCustom(
               CircleAvatar(
                 radius: 40,
                 backgroundColor:
-                    const Color(0xFF6C63FF).withOpacity(0.12),
+                    const Color(0xFF6C63FF).withValues(alpha: 0.12),
                 backgroundImage: profilePhotoUrl != null
                     ? NetworkImage(profilePhotoUrl)
                     : null,
@@ -67,7 +68,7 @@ Future<void> showVolunteerPopupCustom(
                 style: GoogleFonts.poppins(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF6C63FF),
+                  color: const Color(0xFF6C63FF),
                 ),
               ),
 
@@ -77,7 +78,7 @@ Future<void> showVolunteerPopupCustom(
                 width: 50,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: Color(0xFF6C63FF),
+                  color: const Color(0xFF6C63FF),
                   borderRadius: BorderRadius.circular(6),
                 ),
               ),
@@ -85,22 +86,22 @@ Future<void> showVolunteerPopupCustom(
               const SizedBox(height: 20),
 
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1C1D29),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: const Color(0xFF6C63FF).withOpacity(0.25),
+                    color: const Color(0xFF6C63FF).withValues(alpha: 0.25),
                   ),
                 ),
                 child: Column(
                   children: [
                     _infoRow(Icons.school, "Experience: $experience"),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     _infoRow(Icons.star, "Skills: $skills"),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     _infoRow(Icons.location_on, "Lat: $lat"),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     _infoRow(Icons.location_on_outlined, "Lng: $lng"),
                   ],
                 ),
@@ -114,7 +115,7 @@ Future<void> showVolunteerPopupCustom(
                   "Close",
                   style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.55),
+                    color: Colors.white.withValues(alpha: 0.55),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -130,15 +131,15 @@ Future<void> showVolunteerPopupCustom(
 Widget _infoRow(IconData ic, String text) {
   return Row(
     children: [
-      Icon(ic, color: Color(0xFF6C63FF)),
-      SizedBox(width: 10),
+      Icon(ic, color: const Color(0xFF6C63FF)),
+      const SizedBox(width: 10),
       Expanded(
         child: Text(
           text,
           style: GoogleFonts.poppins(
             fontSize: 15,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
           ),
         ),
       ),

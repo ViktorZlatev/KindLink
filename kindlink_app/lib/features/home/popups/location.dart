@@ -45,7 +45,7 @@ void showVolunteerLocationPermissionDialog(
                 text: TextSpan(
                   style: GoogleFonts.poppins(
                     fontSize: 15,
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                   ),
                   children: const [
                     TextSpan(text: "Since you're now a volunteer, "),

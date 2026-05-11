@@ -3,7 +3,7 @@ const OpenAI = require("openai");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 
 // v2 imports
-const { onCall } = require("firebase-functions/v2/https");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 
 admin.initializeApp();
@@ -43,7 +43,7 @@ function safeJsonParseFromModel(content) {
   try {
     return JSON.parse(raw);
   } catch (e) {
-    console.error("❌ OpenAI RAW RESPONSE:\n", raw);
+    console.error(" OpenAI RAW RESPONSE:\n", raw);
     throw new Error("Failed to parse OpenAI JSON output");
   }
 }
@@ -279,6 +279,38 @@ exports.rejectHelpRequest = onCall(async (request) => {
       lastRespondedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
+
+  return { ok: true };
+});
+
+// delete user - the email can be reused
+exports.deleteUserAccount = onCall(async (request) => {
+  const { auth, data } = request;
+
+  if (!auth) {
+    throw new HttpsError("unauthenticated", "Authentication required");
+  }
+
+  // Verify admin directly from the Auth token
+  if (auth.token.email !== "admin@gmail.com") {
+    throw new HttpsError("permission-denied", "Admin access required");
+  }
+
+  const { userId } = data || {};
+  if (!userId) {
+    throw new HttpsError("invalid-argument", "userId is required");
+  }
+
+  // Delete from Firebase Auth
+  try {
+    await admin.auth().deleteUser(userId);
+  } catch (e) {
+    if (e.code !== "auth/user-not-found") {
+      throw new HttpsError("internal", `Auth deletion failed: ${e.message}`);
+    }
+  }
+
+  await db.collection("users").doc(userId).delete();
 
   return { ok: true };
 });

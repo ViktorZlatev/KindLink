@@ -31,14 +31,14 @@ void showHelpRequestDialog(
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF6C63FF),
+                      color: const Color(0xFF6C63FF),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     width: 50,
                     height: 3,
-                    color: Color(0xFF6C63FF),
+                    color: const Color(0xFF6C63FF),
                   ),
                   const SizedBox(height: 22),
 
@@ -47,11 +47,11 @@ void showHelpRequestDialog(
                     child: TextButton.icon(
                       onPressed: () => setState(() => isEditing = !isEditing),
                       icon: Icon(isEditing ? Icons.check_circle : Icons.edit,
-                          color: Color(0xFF6C63FF)),
+                          color: const Color(0xFF6C63FF)),
                       label: Text(
                         isEditing ? "" : "Edit Info",
                         style: GoogleFonts.poppins(
-                          color: Color(0xFF6C63FF),
+                          color: const Color(0xFF6C63FF),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -63,14 +63,14 @@ void showHelpRequestDialog(
                     decoration: BoxDecoration(
                       color: const Color(0xFF1C1D29),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
 
                     child: Column(
                       children: editableData.entries.map((entry) {
                         final key = entry.key;
                         if (key == "timestamp" || key == "fileUrl") {
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         }
 
                         final value = entry.value ?? "";
@@ -82,7 +82,7 @@ void showHelpRequestDialog(
                             color: const Color(0xFF13131A),
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
-                              color: const Color(0xFF6C63FF).withOpacity(0.25),
+                              color: const Color(0xFF6C63FF).withValues(alpha: 0.25),
                             ),
                           ),
                           child: isEditing
@@ -102,16 +102,16 @@ void showHelpRequestDialog(
                                   Text(
                                     key[0].toUpperCase() + key.substring(1),
                                     style: GoogleFonts.poppins(
-                                      color: Color(0xFF6C63FF),
+                                      color: const Color(0xFF6C63FF),
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Text(
                                     value.toString().isNotEmpty
                                       ? value.toString()
                                       : "No information",
-                                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.white.withOpacity(0.75)),
+                                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.white.withValues(alpha: 0.75)),
                                   ),
                                 ],
                               ),
@@ -120,7 +120,7 @@ void showHelpRequestDialog(
                     ),
                   ),
 
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -128,7 +128,7 @@ void showHelpRequestDialog(
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text("Cancel",
-                          style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.55)),
+                          style: GoogleFonts.poppins(color: Colors.white.withValues(alpha: 0.55)),
                         ),
                       ),
                       ElevatedButton(
@@ -137,9 +137,9 @@ void showHelpRequestDialog(
                           onSave(editableData);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF6C63FF),
+                          backgroundColor: const Color(0xFF6C63FF),
                           foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),

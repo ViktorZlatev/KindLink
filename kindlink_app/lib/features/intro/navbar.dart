@@ -20,14 +20,14 @@ class Navbar extends StatelessWidget {
               vertical: 16,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFF1C1D29).withOpacity(0.85),
+              color: const Color(0xFF1C1D29).withValues(alpha: 0.85),
               borderRadius: BorderRadius.circular(40),
               border: Border.all(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 40,
                   offset: const Offset(0, 16),
                 ),
@@ -91,9 +91,9 @@ class Navbar extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.12),
+                            color: Colors.white.withValues(alpha: 0.12),
                           ),
                         ),
                         child: const Icon(
@@ -121,7 +121,7 @@ class Navbar extends StatelessWidget {
           title,
           style: GoogleFonts.poppins(
             fontSize: 15,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -138,13 +138,13 @@ class Navbar extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: Colors.white.withOpacity(0.18),
+            color: Colors.white.withValues(alpha: 0.18),
           ),
         ),
         child: Text(
           text,
           style: GoogleFonts.poppins(
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
             fontWeight: FontWeight.w500,
             fontSize: 14,
           ),
@@ -165,7 +165,7 @@ class Navbar extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF6C63FF).withOpacity(0.45),
+              color: const Color(0xFF6C63FF).withValues(alpha: 0.45),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -188,7 +188,7 @@ class Navbar extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: "Close menu",
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       transitionDuration: const Duration(milliseconds: 350),
       pageBuilder: (context, anim1, anim2) {
         return Align(
@@ -207,9 +207,9 @@ class Navbar extends StatelessWidget {
                   filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1C1D29).withOpacity(0.97),
+                      color: const Color(0xFF1C1D29).withValues(alpha: 0.97),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         width: 1,
                       ),
                     ),
@@ -260,7 +260,7 @@ class Navbar extends StatelessWidget {
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.white.withOpacity(0.08),
+                                      color: Colors.white.withValues(alpha: 0.08),
                                     ),
                                     child: const Icon(
                                       Icons.close_rounded,
@@ -287,7 +287,7 @@ class Navbar extends StatelessWidget {
                                 title: "Contact",
                                 route: '/contact'),
                             const SizedBox(height: 32),
-                            Divider(color: Colors.white.withOpacity(0.08)),
+                            Divider(color: Colors.white.withValues(alpha: 0.08)),
                             const SizedBox(height: 24),
                             _mobileAuthItem(context,
                                 icon: Icons.login_rounded,
@@ -341,7 +341,7 @@ class Navbar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
         ),
         child: Row(
           children: [
@@ -352,7 +352,7 @@ class Navbar extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
               ),
             ),
           ],
@@ -383,13 +383,13 @@ class Navbar extends StatelessWidget {
                 ),
           borderRadius: BorderRadius.circular(20),
           border: outlined
-              ? Border.all(color: Colors.white.withOpacity(0.15))
+              ? Border.all(color: Colors.white.withValues(alpha: 0.15))
               : null,
           boxShadow: outlined
               ? null
               : [
                   BoxShadow(
-                    color: const Color(0xFF6C63FF).withOpacity(0.4),
+                    color: const Color(0xFF6C63FF).withValues(alpha: 0.4),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -399,7 +399,7 @@ class Navbar extends StatelessWidget {
           children: [
             Icon(icon,
                 color: outlined
-                    ? Colors.white.withOpacity(0.7)
+                    ? Colors.white.withValues(alpha: 0.7)
                     : Colors.white,
                 size: 20),
             const SizedBox(width: 16),

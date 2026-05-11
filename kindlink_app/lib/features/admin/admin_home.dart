@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'admin_volunteers.dart';
 import 'admin_requests.dart';
 
@@ -67,16 +68,25 @@ class _AdminHomeState extends State<AdminHome> {
     }
   }
 
+  void _showManageUsers(BuildContext ctx) {
+    showDialog(
+      context: ctx,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+      builder: (_) => const _ManageUsersDialog(),
+    );
+  }
+
   Widget _buildStatCard(String title, int number, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: const Color(0xFF13131A),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6C63FF).withOpacity(0.08),
+            color: const Color(0xFF6C63FF).withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           )
@@ -87,7 +97,7 @@ class _AdminHomeState extends State<AdminHome> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF).withOpacity(0.15),
+              color: const Color(0xFF6C63FF).withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: const Color(0xFF6C63FF), size: 30),
@@ -168,11 +178,11 @@ class _AdminHomeState extends State<AdminHome> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF13131A),
                       border: Border(
-                        bottom: BorderSide(color: Colors.white.withOpacity(0.06)),
+                        bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6C63FF).withOpacity(0.1),
+                          color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -238,12 +248,211 @@ class _AdminHomeState extends State<AdminHome> {
                           Icons.emergency_share,
                           () => DisplayHelpRequests(context),
                         ),
+                        const SizedBox(height: 16),
+                        _buildActionButton(
+                          "Manage Users",
+                          Icons.manage_accounts,
+                          () => _showManageUsers(context),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
+    );
+  }
+}
+
+class _ManageUsersDialog extends StatefulWidget {
+  const _ManageUsersDialog();
+
+  @override
+  State<_ManageUsersDialog> createState() => _ManageUsersDialogState();
+}
+
+class _ManageUsersDialogState extends State<_ManageUsersDialog> {
+  bool _loading = true;
+  List<Map<String, dynamic>> _users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
+
+  Future<void> _loadUsers() async {
+    final snap = await FirebaseFirestore.instance.collection("users").get();
+    if (!mounted) return;
+    setState(() {
+      _users = snap.docs
+          .map((d) => {"id": d.id, ...d.data()})
+          .where((u) => u["role"] != "admin")
+          .toList();
+      _loading = false;
+    });
+  }
+
+  Future<void> _deleteUser(String userId, String displayName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF13131A),
+        title: Text("Delete user",
+            style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
+        content: Text(
+          "Delete \"$displayName\"?\nThis removes them from both Authentication and Firestore so the email can be reused.",
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text("Cancel",
+                style: GoogleFonts.poppins(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text("Delete",
+                style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable("deleteUserAccount")
+          .call({"userId": userId});
+
+      if (!mounted) return;
+      setState(() => _users.removeWhere((u) => u["id"] == userId));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("User deleted successfully."),
+          backgroundColor: Color(0xFF6C63FF),
+        ),
+      );
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${e.message}"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+      backgroundColor: const Color(0xFF13131A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          width: 500,
+          child: _loading
+              ? const SizedBox(
+                  height: 120,
+                  child: Center(child: CircularProgressIndicator()))
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Manage Users",
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF6C63FF),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 420),
+                      child: _users.isEmpty
+                          ? Center(
+                              child: Text(
+                                "No users found",
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white54),
+                              ),
+                            )
+                          : ListView.separated(
+                              shrinkWrap: true,
+                              itemCount: _users.length,
+                              separatorBuilder: (_, __) => Divider(
+                                  color: Colors.white.withValues(alpha: 0.07)),
+                              itemBuilder: (_, i) {
+                                final u = _users[i];
+                                final name = u["username"] ?? u["email"] ?? "—";
+                                final email = u["email"] ?? "";
+                                final isVolunteer = u["isVolunteer"] == true;
+                                return ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: CircleAvatar(
+                                    backgroundColor:
+                                        const Color(0xFF6C63FF).withValues(alpha: 0.15),
+                                    backgroundImage: u["profilePhotoUrl"] != null
+                                        ? NetworkImage(u["profilePhotoUrl"])
+                                        : null,
+                                    child: u["profilePhotoUrl"] == null
+                                        ? Icon(
+                                            isVolunteer
+                                                ? Icons.volunteer_activism
+                                                : Icons.person,
+                                            color: const Color(0xFF6C63FF),
+                                            size: 20,
+                                          )
+                                        : null,
+                                  ),
+                                  title: Text(
+                                    name,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "$email${isVolunteer ? "  •  Volunteer" : ""}",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white38,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete_outline,
+                                        color: Colors.redAccent),
+                                    tooltip: "Delete user",
+                                    onPressed: () =>
+                                        _deleteUser(u["id"], name),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(),
+                      child: Text(
+                        "Close",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.white54,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
     );
   }
 }

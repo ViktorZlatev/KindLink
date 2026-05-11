@@ -38,7 +38,7 @@ class AboutSection extends StatelessWidget {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              const Color(0xFF6C63FF).withOpacity(0.1),
+                              const Color(0xFF6C63FF).withValues(alpha: 0.1),
                               Colors.transparent,
                             ],
                           ),
@@ -111,7 +111,7 @@ class AboutSection extends StatelessWidget {
                                 : TextAlign.start,
                             style: GoogleFonts.poppins(
                               fontSize: isMobile ? 15 : 17,
-                              color: Colors.white.withOpacity(0.45),
+                              color: Colors.white.withValues(alpha: 0.45),
                               height: 1.75,
                             ),
                           ),
@@ -136,16 +136,16 @@ class AboutSection extends StatelessWidget {
                     color: const Color(0xFF13131A),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.06),
+                      color: Colors.white.withValues(alpha: 0.06),
                       width: 1,
                     ),
                   ),
                   child: isMobile
-                      ? Wrap(
+                      ? const Wrap(
                           alignment: WrapAlignment.center,
                           spacing: 32,
                           runSpacing: 24,
-                          children: const [
+                          children: [
                             _StatItem(value: "5,000+", label: "Volunteers"),
                             _StatItem(value: "150+", label: "Cities"),
                             _StatItem(value: "10K+", label: "Helped"),
@@ -196,7 +196,7 @@ class AboutSection extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: isMobile ? 18 : 26,
-                          color: Colors.white.withOpacity(0.75),
+                          color: Colors.white.withValues(alpha: 0.75),
                           height: 1.6,
                           fontWeight: FontWeight.w500,
                           letterSpacing: -0.3,
@@ -206,11 +206,11 @@ class AboutSection extends StatelessWidget {
                     const SizedBox(height: 72),
 
                     // Value cards
-                    Wrap(
+                    const Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 20,
                       runSpacing: 20,
-                      children: const [
+                      children: [
                         _ValueCard(
                           icon: Icons.lightbulb_outline_rounded,
                           title: "Our Vision",
@@ -245,7 +245,7 @@ class AboutSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(
-                        color: Colors.white.withOpacity(0.06), width: 1),
+                        color: Colors.white.withValues(alpha: 0.06), width: 1),
                   ),
                 ),
                 child: Text(
@@ -253,7 +253,7 @@ class AboutSection extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.25),
+                    color: Colors.white.withValues(alpha: 0.25),
                   ),
                 ),
               ),
@@ -271,7 +271,7 @@ class _Divider extends StatelessWidget {
     return Container(
       width: 1,
       height: 40,
-      color: Colors.white.withOpacity(0.07),
+      color: Colors.white.withValues(alpha: 0.07),
     );
   }
 }
@@ -299,7 +299,7 @@ class _StatItem extends StatelessWidget {
           label,
           style: GoogleFonts.poppins(
             fontSize: 13,
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withValues(alpha: 0.4),
           ),
         ),
       ],
@@ -326,8 +326,8 @@ class _ValueCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            accentColor.withOpacity(0.3),
-            Colors.white.withOpacity(0.04),
+            accentColor.withValues(alpha: 0.3),
+            Colors.white.withValues(alpha: 0.04),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
@@ -349,10 +349,10 @@ class _ValueCard extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.12),
+                color: accentColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(13),
                 border: Border.all(
-                  color: accentColor.withOpacity(0.2),
+                  color: accentColor.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -374,7 +374,7 @@ class _ValueCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 height: 1.7,
-                color: Colors.white.withOpacity(0.45),
+                color: Colors.white.withValues(alpha: 0.45),
               ),
             ),
           ],

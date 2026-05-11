@@ -22,7 +22,7 @@ class AuthBrandPanel extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF6C63FF).withOpacity(0.15),
+                    const Color(0xFF6C63FF).withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -39,7 +39,7 @@ class AuthBrandPanel extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF5B54E6).withOpacity(0.1),
+                    const Color(0xFF5B54E6).withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -67,7 +67,7 @@ class AuthBrandPanel extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6C63FF).withOpacity(0.45),
+                          color: const Color(0xFF6C63FF).withValues(alpha: 0.45),
                           blurRadius: 28,
                           offset: const Offset(0, 10),
                         ),
@@ -93,24 +93,24 @@ class AuthBrandPanel extends StatelessWidget {
                     "Connecting volunteers\nwith people in need.\nMaking kindness visible.",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.45),
+                      color: Colors.white.withValues(alpha: 0.45),
                       height: 1.7,
                     ),
                   ),
                   const SizedBox(height: 52),
 
                   // Feature pills
-                  _Pill(
+                  const _Pill(
                     icon: Icons.verified_user_outlined,
                     text: "Verified & safe community",
                   ),
                   const SizedBox(height: 14),
-                  _Pill(
+                  const _Pill(
                     icon: Icons.map_outlined,
                     text: "Real-time map of requests",
                   ),
                   const SizedBox(height: 14),
-                  _Pill(
+                  const _Pill(
                     icon: Icons.bolt_outlined,
                     text: "Instant connections",
                   ),
@@ -120,7 +120,7 @@ class AuthBrandPanel extends StatelessWidget {
                     "© 2026 KindLink",
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                     ),
                   ),
                 ],
@@ -146,10 +146,10 @@ class _Pill extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFF6C63FF).withOpacity(0.12),
+            color: const Color(0xFF6C63FF).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: const Color(0xFF6C63FF).withOpacity(0.2),
+              color: const Color(0xFF6C63FF).withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -160,7 +160,7 @@ class _Pill extends StatelessWidget {
           text,
           style: GoogleFonts.poppins(
             fontSize: 14,
-            color: Colors.white.withOpacity(0.55),
+            color: Colors.white.withValues(alpha: 0.55),
           ),
         ),
       ],
@@ -183,12 +183,12 @@ class AuthBackButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: light
-                ? Colors.white.withOpacity(0.1)
+                ? Colors.white.withValues(alpha: 0.1)
                 : const Color(0xFFE0DEFF),
             width: 1,
           ),
           color: light
-              ? Colors.white.withOpacity(0.05)
+              ? Colors.white.withValues(alpha: 0.05)
               : Colors.white,
         ),
         child: Row(
@@ -198,7 +198,7 @@ class AuthBackButton extends StatelessWidget {
               Icons.arrow_back_rounded,
               size: 15,
               color: light
-                  ? Colors.white.withOpacity(0.6)
+                  ? Colors.white.withValues(alpha: 0.6)
                   : const Color(0xFF6C63FF),
             ),
             const SizedBox(width: 6),
@@ -208,7 +208,7 @@ class AuthBackButton extends StatelessWidget {
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: light
-                    ? Colors.white.withOpacity(0.6)
+                    ? Colors.white.withValues(alpha: 0.6)
                     : const Color(0xFF6C63FF),
               ),
             ),

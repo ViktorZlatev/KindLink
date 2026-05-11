@@ -51,7 +51,7 @@ class MapFunctions {
       );
 
       final clipPath = ui.Path()
-        ..addOval(ui.Rect.fromLTWH(4, 4, size - 8, size - 8));
+        ..addOval(const ui.Rect.fromLTWH(4, 4, size - 8, size - 8));
       canvas.clipPath(clipPath);
 
       canvas.drawImageRect(
@@ -67,7 +67,7 @@ class MapFunctions {
       final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
 
       final descriptor =
-          BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+          BitmapDescriptor.bytes(byteData!.buffer.asUint8List());
       _markerIconCache[imageUrl] = descriptor;
       return descriptor;
     } catch (_) {

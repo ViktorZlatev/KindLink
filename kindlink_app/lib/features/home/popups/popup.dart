@@ -50,7 +50,7 @@ void showEmergencyDialog(
                 style: GoogleFonts.poppins(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF6C63FF),
+                  color: const Color(0xFF6C63FF),
                 ),
               ),
 
@@ -83,7 +83,7 @@ void showEmergencyDialog(
                                 point,
                                 style: GoogleFonts.poppins(
                                   fontSize: 15,
-                                  color: Colors.white.withOpacity(0.85),
+                                  color: Colors.white.withValues(alpha: 0.85),
                                   height: 1.35,
                                 ),
                               ),
@@ -106,7 +106,7 @@ void showEmergencyDialog(
                       'Cancel',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -118,7 +118,7 @@ void showEmergencyDialog(
                       onConfirm();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF6C63FF),
+                      backgroundColor: const Color(0xFF6C63FF),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22,

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +7,7 @@ void DisplayVolunteers(BuildContext context) {
   showDialog(
     context: context,
     barrierDismissible: true,
-    barrierColor: Colors.black.withOpacity(0.45),
+    barrierColor: Colors.black.withValues(alpha: 0.45),
     builder: (context) {
       return const VolunteerPopup();
     },
@@ -160,10 +159,10 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
       decoration: BoxDecoration(
         color: const Color(0xFF1C1D29),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.25)),
+        border: Border.all(color: const Color(0xFF6C63FF).withValues(alpha: 0.25)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6C63FF).withOpacity(0.06),
+            color: const Color(0xFF6C63FF).withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -240,7 +239,7 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
               ),
             ),
             TextSpan(
@@ -249,7 +248,7 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
                   : "Not provided",
               style: GoogleFonts.poppins(
                 fontSize: 14,
-                color: Colors.white.withOpacity(0.55),
+                color: Colors.white.withValues(alpha: 0.55),
               ),
             ),
           ],
@@ -290,7 +289,7 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
                                 "No pending applications",
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
-                                  color: Colors.white.withOpacity(0.55),
+                                  color: Colors.white.withValues(alpha: 0.55),
                                 ),
                               ),
                             )
@@ -311,7 +310,7 @@ class _VolunteerPopupState extends State<VolunteerPopup> {
                         "Close",
                         style: GoogleFonts.poppins(
                           fontSize: 18,
-                          color: Colors.white.withOpacity(0.55),
+                          color: Colors.white.withValues(alpha: 0.55),
                         ),
                       ),
                     ),

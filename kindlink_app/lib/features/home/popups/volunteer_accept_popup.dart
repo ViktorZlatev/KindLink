@@ -16,7 +16,7 @@ void showVolunteerAcceptedPopup(
   showDialog(
     context: context,
     barrierDismissible: false,
-    barrierColor: Colors.black.withOpacity(0.45),
+    barrierColor: Colors.black.withValues(alpha: 0.45),
     builder: (context) => _VolunteerAcceptedDialog(
       requesterName: requesterName,
       requesterId: requesterId,
@@ -122,7 +122,7 @@ class _VolunteerAcceptedDialogState extends State<_VolunteerAcceptedDialog> {
               "${widget.requesterName} has accepted your offer.\nYou can now proceed to help.",
               style: GoogleFonts.poppins(
                 fontSize: 15,
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
               ),
               textAlign: TextAlign.center,
             ),

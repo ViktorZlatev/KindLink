@@ -49,7 +49,7 @@ void showVolunteerForm(
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF6C63FF),
+                        color: const Color(0xFF6C63FF),
                       ),
                     ),
 
@@ -83,7 +83,7 @@ void showVolunteerForm(
                                     "Photo",
                                     style: GoogleFonts.poppins(
                                       fontSize: 11,
-                                      color: Color(0xFF6C63FF),
+                                      color: const Color(0xFF6C63FF),
                                     ),
                                   ),
                                 ],
@@ -111,27 +111,29 @@ void showVolunteerForm(
                         if (result != null && result.files.single.path != null) {
                           selectedFile = File(result.files.single.path!);
                           setState(() {});
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("File successfully selected"),
-                              backgroundColor: Color(0xFF6C63FF),
-                            ),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("File successfully selected"),
+                                backgroundColor: Color(0xFF6C63FF),
+                              ),
+                            );
+                          }
                         }
                       },
-                      icon: Icon(Icons.upload_file, color: Color(0xFF6C63FF)),
+                      icon: const Icon(Icons.upload_file, color: Color(0xFF6C63FF)),
                       label: Text(
                         selectedFile == null
                           ? "Upload certificate (optional)"
                           : selectedFile!.path.split('/').last,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF6C63FF),
+                          color: const Color(0xFF6C63FF),
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -143,7 +145,7 @@ void showVolunteerForm(
                             "Cancel",
                             style: GoogleFonts.poppins(
                               fontSize: 16,
-                              color: Colors.white.withOpacity(0.55),
+                              color: Colors.white.withValues(alpha: 0.55),
                             ),
                           ),
                         ),
@@ -195,22 +197,25 @@ void showVolunteerForm(
                               .collection("volunteer_forms")
                               .add(volunteerData);
 
+                            if (!context.mounted) return;
                             Navigator.pop(context);
                             onConfirm(volunteerData);
                             } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Submission failed: $e"),
-                                  backgroundColor: Colors.red.shade700,
-                                ),
-                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Submission failed: $e"),
+                                    backgroundColor: Colors.red.shade700,
+                                  ),
+                                );
+                              }
                             }
                           },
 
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF6C63FF),
+                            backgroundColor: const Color(0xFF6C63FF),
                             foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -252,10 +257,10 @@ Widget _field(
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             fontSize: 16,
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
           ),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         TextField(
           maxLines: maxLines,
           controller: controller,
@@ -265,13 +270,13 @@ Widget _field(
             fillColor: const Color(0xFF0D0D12),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           ),
         ),
       ],

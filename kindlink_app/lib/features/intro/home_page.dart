@@ -56,7 +56,7 @@ class _HeroSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF6C63FF).withOpacity(0.13),
+                      const Color(0xFF6C63FF).withValues(alpha: 0.13),
                       Colors.transparent,
                     ],
                   ),
@@ -74,7 +74,7 @@ class _HeroSection extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF6C63FF).withOpacity(0.07),
+                    const Color(0xFF6C63FF).withValues(alpha: 0.07),
                     Colors.transparent,
                   ],
                 ),
@@ -95,10 +95,10 @@ class _HeroSection extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6C63FF).withOpacity(0.1),
+                    color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(50),
                     border: Border.all(
-                      color: const Color(0xFF6C63FF).withOpacity(0.25),
+                      color: const Color(0xFF6C63FF).withValues(alpha: 0.25),
                       width: 1,
                     ),
                   ),
@@ -172,7 +172,7 @@ class _HeroSection extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
                       fontSize: isMobile ? 15 : 18,
-                      color: Colors.white.withOpacity(0.45),
+                      color: Colors.white.withValues(alpha: 0.45),
                       height: 1.7,
                       fontWeight: FontWeight.w400,
                     ),
@@ -199,7 +199,7 @@ class _HeroSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF6C63FF).withOpacity(0.4),
+                              color: const Color(0xFF6C63FF).withValues(alpha: 0.4),
                               blurRadius: 32,
                               offset: const Offset(0, 12),
                             ),
@@ -225,7 +225,7 @@ class _HeroSection extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             width: 1,
                           ),
                         ),
@@ -237,14 +237,14 @@ class _HeroSection extends StatelessWidget {
                               style: GoogleFonts.poppins(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.white.withOpacity(0.65),
+                                color: Colors.white.withValues(alpha: 0.65),
                               ),
                             ),
                             const SizedBox(width: 6),
                             Icon(
                               Icons.arrow_forward_rounded,
                               size: 16,
-                              color: Colors.white.withOpacity(0.65),
+                              color: Colors.white.withValues(alpha: 0.65),
                             ),
                           ],
                         ),
@@ -283,16 +283,16 @@ class _StatsRow extends StatelessWidget {
           color: const Color(0xFF13131A),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
             width: 1,
           ),
         ),
         child: isMobile
-            ? Wrap(
+            ? const Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 32,
                 runSpacing: 24,
-                children: const [
+                children: [
                   _StatItem(number: "5,000+", label: "Volunteers"),
                   _StatItem(number: "150+", label: "Cities"),
                   _StatItem(number: "10K+", label: "People Helped"),
@@ -322,7 +322,7 @@ class _VerticalDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 40,
-      color: Colors.white.withOpacity(0.07),
+      color: Colors.white.withValues(alpha: 0.07),
     );
   }
 }
@@ -350,7 +350,7 @@ class _StatItem extends StatelessWidget {
           label,
           style: GoogleFonts.poppins(
             fontSize: 13,
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withValues(alpha: 0.4),
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -430,17 +430,17 @@ class _FeaturesSection extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               height: 1.6,
             ),
           ),
           const SizedBox(height: 64),
 
-          Wrap(
+          const Wrap(
             alignment: WrapAlignment.center,
             spacing: 20,
             runSpacing: 20,
-            children: const [
+            children: [
               _FeatureCard(
                 icon: Icons.volunteer_activism_outlined,
                 title: "Help Nearby",
@@ -490,8 +490,8 @@ class _FeatureCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            accentColor.withOpacity(0.35),
-            Colors.white.withOpacity(0.04),
+            accentColor.withValues(alpha: 0.35),
+            Colors.white.withValues(alpha: 0.04),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
@@ -513,10 +513,10 @@ class _FeatureCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.12),
+                color: accentColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: accentColor.withOpacity(0.2),
+                  color: accentColor.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -538,7 +538,7 @@ class _FeatureCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 height: 1.7,
-                color: Colors.white.withOpacity(0.45),
+                color: Colors.white.withValues(alpha: 0.45),
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -566,7 +566,7 @@ class _Footer extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
             width: 1,
           ),
         ),
@@ -616,7 +616,7 @@ class _Footer extends StatelessWidget {
                         "Connecting volunteers\nwith people in need.",
                         style: GoogleFonts.poppins(
                           fontSize: 13,
-                          color: Colors.white.withOpacity(0.35),
+                          color: Colors.white.withValues(alpha: 0.35),
                           height: 1.7,
                         ),
                       ),
@@ -627,10 +627,10 @@ class _Footer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _FooterHeading("Product"),
-                      _FooterLink(context, "Home", '/'),
-                      _FooterLink(context, "About", '/about'),
-                      _FooterLink(context, "Contact", '/contact'),
+                      _footerHeading("Product"),
+                      _footerLink(context, "Home", '/'),
+                      _footerLink(context, "About", '/about'),
+                      _footerLink(context, "Contact", '/contact'),
                     ],
                   ),
                 ),
@@ -638,9 +638,9 @@ class _Footer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _FooterHeading("Account"),
-                      _FooterLink(context, "Log In", '/login'),
-                      _FooterLink(context, "Sign Up", '/signup'),
+                      _footerHeading("Account"),
+                      _footerLink(context, "Log In", '/login'),
+                      _footerLink(context, "Sign Up", '/signup'),
                     ],
                   ),
                 ),
@@ -673,14 +673,14 @@ class _Footer extends StatelessWidget {
               ],
             ),
           const SizedBox(height: 40),
-          Divider(color: Colors.white.withOpacity(0.06), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
           const SizedBox(height: 28),
           Text(
             "© 2026 KindLink — Made with care in Bulgaria",
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 12,
-              color: Colors.white.withOpacity(0.25),
+              color: Colors.white.withValues(alpha: 0.25),
             ),
           ),
         ],
@@ -688,7 +688,7 @@ class _Footer extends StatelessWidget {
     );
   }
 
-  static Widget _FooterHeading(String text) {
+  static Widget _footerHeading(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Text(
@@ -696,14 +696,14 @@ class _Footer extends StatelessWidget {
         style: GoogleFonts.poppins(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: Colors.white.withOpacity(0.35),
+          color: Colors.white.withValues(alpha: 0.35),
           letterSpacing: 1.5,
         ),
       ),
     );
   }
 
-  static Widget _FooterLink(
+  static Widget _footerLink(
       BuildContext context, String text, String route) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -713,7 +713,7 @@ class _Footer extends StatelessWidget {
           text,
           style: GoogleFonts.poppins(
             fontSize: 14,
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
           ),
         ),
       ),
