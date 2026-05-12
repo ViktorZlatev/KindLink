@@ -11,13 +11,13 @@ void main() {
     );
 
  
-    expect(find.text('Welcome Back!'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
 
     expect(find.byType(TextFormField), findsNWidgets(2));
-    expect(find.text('Email'), findsOneWidget);
+    expect(find.text('Email address'), findsOneWidget);
     expect(find.text('Password'), findsOneWidget);
 
-    expect(find.text('Login'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
   });
 
   testWidgets('Login validation shows errors on empty submit',
@@ -28,11 +28,11 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Login'));
+    await tester.tap(find.text('Sign in'));
     await tester.pump();
 
     expect(find.text('Enter a valid email'), findsOneWidget);
-    expect(find.text('Password must be 6+ chars'), findsOneWidget);
+    expect(find.text('Must be 6+ characters'), findsOneWidget);
   });
 
   testWidgets('Login form accepts valid input without validation errors',
@@ -51,6 +51,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Enter a valid email'), findsNothing);
-    expect(find.text('Password must be 6+ chars'), findsNothing);
+    expect(find.text('Must be 6+ characters'), findsNothing);
   });
 }

@@ -11,6 +11,9 @@ void showVolunteerHelpPopup(
 }) {
   final requesterName = data["username"] ?? "Someone";
   final status = data["status"] ?? "open";
+  final resume = data["resume"] is Map ? data["resume"] as Map : {};
+  final problem = resume["problem"]?.toString().trim() ?? "";
+  final symptoms = resume["symptoms"]?.toString().trim() ?? "";
 
   showDialog(
     context: context,
@@ -61,15 +64,75 @@ void showVolunteerHelpPopup(
 
               const SizedBox(height: 20),
 
+              if (problem.isNotEmpty || symptoms.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFF6C63FF).withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (problem.isNotEmpty) ...[
+                        Text(
+                          "Problem",
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF6C63FF),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          problem,
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.white.withValues(alpha: 0.85),
+                          ),
+                        ),
+                      ],
+                      if (problem.isNotEmpty && symptoms.isNotEmpty)
+                        const SizedBox(height: 10),
+                      if (symptoms.isNotEmpty) ...[
+                        Text(
+                          "Symptoms",
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF6C63FF),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          symptoms,
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.white.withValues(alpha: 0.85),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 12),
+
               Text(
                 "Status: $status",
                 style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 13,
+                  color: Colors.white.withValues(alpha: 0.45),
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 20),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -484,7 +484,37 @@ class _HomePageState extends State<Home> {
                                       ],
                                     ),
                                   )
-                                : ElevatedButton(
+                                : _volunteerStatus == "pending"
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 14, vertical: 7),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFF9800).withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(30),
+                                          border: Border.all(
+                                            color: const Color(0xFFFF9800).withValues(alpha: 0.35),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.hourglass_top_rounded,
+                                              color: Color(0xFFFF9800),
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              "Pending",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFFFF9800),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : ElevatedButton(
                                     onPressed: _becomeVolunteer,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF1C1D29),

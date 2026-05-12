@@ -16,7 +16,7 @@ void main() {
     );
 
     expect(
-      find.textContaining('Empowering Kindness'),
+      find.textContaining('Give back to your'),
       findsOneWidget,
     );
 
