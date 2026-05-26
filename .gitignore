@@ -2,6 +2,10 @@
 .claude/
 CLAUDE.md
 
+# Firestore backups and service account key
+backups/
+functions/serviceAccountKey.json
+
 # Logs
 logs
 *.log
