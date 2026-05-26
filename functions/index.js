@@ -141,7 +141,30 @@ exports.rankHelpRequest = onCall(
       })
     );
 
-    const volunteers = volunteerEntries.filter(Boolean);
+    const allVolunteers = volunteerEntries.filter(Boolean);
+
+    // Volunteers already committed to another active request
+
+    const activeRequestsSnap = await db
+      .collection("help_requests")
+      .where("status", "in", [
+        "awaiting_volunteer",
+        "pending",
+        "accepted",
+        "closed_once",
+      ])
+      .get();
+
+    const busyVolunteerIds = new Set();
+    activeRequestsSnap.docs.forEach((doc) => {
+      const d = doc.data();
+      if (d.currentVolunteerId) busyVolunteerIds.add(d.currentVolunteerId);
+      if (d.acceptedVolunteerId) busyVolunteerIds.add(d.acceptedVolunteerId);
+    });
+
+    const volunteers = allVolunteers.filter(
+      (v) => !busyVolunteerIds.has(v.volunteerId)
+    );
 
     if (volunteers.length === 0) {
       await reqRef.update({
@@ -281,6 +304,19 @@ exports.rejectHelpRequest = onCall(async (request) => {
   });
 
   return { ok: true };
+});
+
+// set admin custom claim - no-op for non-admin users
+exports.setAdminClaim = onCall(async (request) => {
+  const { auth } = request;
+  if (!auth) {
+    throw new HttpsError("unauthenticated", "Authentication required");
+  }
+  if (auth.token.email !== "admin@gmail.com") {
+    return { isAdmin: false };
+  }
+  await admin.auth().setCustomUserClaims(auth.uid, { admin: true });
+  return { isAdmin: true };
 });
 
 // delete user - the email can be reused

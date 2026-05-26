@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'auth_widgets.dart';
 import 'pn_service.dart';
@@ -24,9 +25,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
-      bool isAdmin = email == "admin@gmail.com" && password == "admin123";
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       await PushNotificationService.initAndSaveToken();
+      await FirebaseFunctions.instance.httpsCallable('setAdminClaim').call();
+      final tokenResult = await FirebaseAuth.instance.currentUser!.getIdTokenResult(true);
+      final isAdmin = tokenResult.claims?['admin'] == true;
       if (mounted) Navigator.pushReplacementNamed(context, isAdmin ? '/admin_home' : '/home');
     } on FirebaseAuthException catch (e) {
       String msg;
