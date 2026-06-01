@@ -2,14 +2,14 @@ const admin = require("firebase-admin");
 const OpenAI = require("openai");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 
-// v2 imports
+//imports
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Secret (v2)
+// Secret
 const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
 // GEO DISTANCE
@@ -142,8 +142,6 @@ exports.rankHelpRequest = onCall(
     );
 
     const allVolunteers = volunteerEntries.filter(Boolean);
-
-    // Volunteers already committed to another active request
 
     const activeRequestsSnap = await db
       .collection("help_requests")
@@ -306,7 +304,7 @@ exports.rejectHelpRequest = onCall(async (request) => {
   return { ok: true };
 });
 
-// set admin custom claim - no-op for non-admin users
+// set admin custom claim
 exports.setAdminClaim = onCall(async (request) => {
   const { auth } = request;
   if (!auth) {
@@ -319,7 +317,7 @@ exports.setAdminClaim = onCall(async (request) => {
   return { isAdmin: true };
 });
 
-// delete user - the email can be reused
+// delete user
 exports.deleteUserAccount = onCall(async (request) => {
   const { auth, data } = request;
 
@@ -327,7 +325,7 @@ exports.deleteUserAccount = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required");
   }
 
-  // Verify admin directly from the Auth token
+  // Verify admin
   if (auth.token.email !== "admin@gmail.com") {
     throw new HttpsError("permission-denied", "Admin access required");
   }

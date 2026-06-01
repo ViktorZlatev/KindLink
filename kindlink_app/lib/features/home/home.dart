@@ -22,11 +22,12 @@ import 'survey.dart';
 import 'resume.dart';
 import 'volunteer.dart';
 import 'help.dart';
-import 'help_listener.dart';
+import 'listeners/help_listener.dart';
 import 'popups/accept_popup.dart';
 import 'popups/volunteer_accept_popup.dart';
-import 'active_request_listener.dart';
+import 'listeners/active_request_listener.dart';
 import 'resolving_service.dart';
+import 'listeners/volunteer_status_listener.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -51,6 +52,7 @@ class _HomePageState extends State<Home> {
   final MapFunctions mapFunctions = MapFunctions();
   final HelpListenerService _helpListener = HelpListenerService();
   final _activeRequestListener = ActiveHelpRequestListener();
+  final _volunteerStatusListener = VolunteerStatusListener();
 
   Map<String, dynamic>? _surveyData;
 
@@ -97,6 +99,7 @@ class _HomePageState extends State<Home> {
     mapFunctions.dispose();
     _helpListener.dispose();
     _activeRequestListener.dispose();
+    _volunteerStatusListener.dispose();
     super.dispose();
   }
 
@@ -228,6 +231,55 @@ class _HomePageState extends State<Home> {
       }
 
       _volunteerNotified = true;
+
+      _volunteerStatusListener.start(
+        initialIsVolunteer: _isVolunteer,
+        initialStatus: _volunteerStatus,
+        onBecameVolunteer: () {
+          if (!mounted) return;
+          setState(() {
+            _isVolunteer = true;
+          });
+
+          mapFunctions.startVolunteerLocationUpdates(
+            onError: (msg) => showTopMessage(context, msg),
+          );
+          
+          _activeRequestListener.start(
+            isVolunteer: true,
+            onChanged: ({String? requestId, String? status}) {
+              if (!mounted) return;
+              setState(() {
+                _activeRequestId = requestId;
+                _activeRequestStatus = status;
+              });
+            },
+          );
+
+          _helpListener.startListening(
+            isVolunteer: true,
+            isUser: false,
+            onNewRequest: (id, reqData) {
+              showVolunteerHelpPopup(context, requestId: id, data: reqData);
+            },
+            onVolunteerHelpAccepted: (id, reqData) {
+              showVolunteerAcceptedPopup(context, requestId: id, data: reqData);
+            },
+            onVolunteerPendingForUser: (id, reqData) {
+              showAcceptedPopupUser(context, requestId: id, data: reqData);
+            },
+          );
+        },
+        onStatusChanged: (status) {
+          if (!mounted) return;
+          setState(() {
+            _volunteerStatus = status;
+          });
+          if (status == "rejected") {
+            showTopMessage(context, "Sorry, you were not approved!");
+          }
+        },
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {

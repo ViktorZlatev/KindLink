@@ -73,7 +73,9 @@ class _AdminHomeState extends State<AdminHome> {
       context: ctx,
       barrierDismissible: true,
       barrierColor: Colors.black.withValues(alpha: 0.45),
-      builder: (_) => const _ManageUsersDialog(),
+      builder: (_) => _ManageUsersDialog(
+        onUserDeleted: _loadAdminData,
+      ),
     );
   }
 
@@ -265,7 +267,11 @@ class _AdminHomeState extends State<AdminHome> {
 }
 
 class _ManageUsersDialog extends StatefulWidget {
-  const _ManageUsersDialog();
+  final VoidCallback onUserDeleted;
+
+  const _ManageUsersDialog({
+    required this.onUserDeleted,
+  });
 
   @override
   State<_ManageUsersDialog> createState() => _ManageUsersDialogState();
@@ -329,6 +335,8 @@ class _ManageUsersDialogState extends State<_ManageUsersDialog> {
 
       if (!mounted) return;
       setState(() => _users.removeWhere((u) => u["id"] == userId));
+
+      widget.onUserDeleted();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

@@ -35,9 +35,15 @@ class MapFunctions {
       final bytes = await consolidateHttpClientResponseBytes(res);
       client.close();
 
-      const double size = 120;
+      // Render at physical pixels (displaySize * dpr) so the marker is always
+      // exactly displaySize logical pixels on every screen density.
+      const double displaySize = 56;
+      final double dpr =
+          ui.PlatformDispatcher.instance.implicitView?.devicePixelRatio ?? 2.0;
+      final int renderSize = (displaySize * dpr).round();
+
       final codec = await ui.instantiateImageCodec(
-          bytes, targetWidth: size.toInt(), targetHeight: size.toInt());
+          bytes, targetWidth: renderSize, targetHeight: renderSize);
       final frame = await codec.getNextFrame();
       final srcImage = frame.image;
 
@@ -45,29 +51,31 @@ class MapFunctions {
       final canvas = ui.Canvas(recorder);
 
       canvas.drawCircle(
-        const ui.Offset(size / 2, size / 2),
-        size / 2,
+        ui.Offset(renderSize / 2, renderSize / 2),
+        renderSize / 2,
         ui.Paint()..color = const ui.Color(0xFF6C63FF),
       );
 
       final clipPath = ui.Path()
-        ..addOval(const ui.Rect.fromLTWH(4, 4, size - 8, size - 8));
+        ..addOval(ui.Rect.fromLTWH(4, 4, renderSize - 8, renderSize - 8));
       canvas.clipPath(clipPath);
 
       canvas.drawImageRect(
         srcImage,
         ui.Rect.fromLTWH(
             0, 0, srcImage.width.toDouble(), srcImage.height.toDouble()),
-        const ui.Rect.fromLTWH(4, 4, size - 8, size - 8),
+        ui.Rect.fromLTWH(4, 4, renderSize - 8, renderSize - 8),
         ui.Paint(),
       );
 
       final picture = recorder.endRecording();
-      final img = await picture.toImage(size.toInt(), size.toInt());
+      final img = await picture.toImage(renderSize, renderSize);
       final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
 
-      final descriptor =
-          BitmapDescriptor.bytes(byteData!.buffer.asUint8List());
+      final descriptor = BitmapDescriptor.bytes(
+        byteData!.buffer.asUint8List(),
+        imagePixelRatio: dpr,
+      );
       _markerIconCache[imageUrl] = descriptor;
       return descriptor;
     } catch (_) {

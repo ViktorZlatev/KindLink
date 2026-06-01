@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HelpRequestService {
   static Future<String> sendImmediateHelpRequest({
@@ -25,12 +26,41 @@ class HelpRequestService {
           ? Map<String, dynamic>.from(userData['survey'])
           : <String, dynamic>{};
 
-      
+      Map<String, dynamic>? freshLocation;
+      try {
+        final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (serviceEnabled) {
+          LocationPermission permission = await Geolocator.checkPermission();
+          if (permission == LocationPermission.denied) {
+            permission = await Geolocator.requestPermission();
+          }
+          if (permission == LocationPermission.whileInUse ||
+              permission == LocationPermission.always) {
+            final pos = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high,
+            );
+            freshLocation = {
+              "lat": pos.latitude,
+              "lng": pos.longitude,
+              "updatedAt": FieldValue.serverTimestamp(),
+            };
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(user.uid)
+                .update({"location": freshLocation});
+          }
+        }
+      } catch (e) {
+        debugPrint("⚠️ Could not get fresh location, using cached: $e");
+      }
+
+      final location = freshLocation ?? userData['location'];
+
       final docRef =
           await FirebaseFirestore.instance.collection('help_requests').add({
         'userId': user.uid,
         'username': userData['username'] ?? user.email,
-        'location': userData['location'], 
+        'location': location,
         'resume': resume,
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'open',
