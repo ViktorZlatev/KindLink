@@ -31,7 +31,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// ────────────────────────── HERO ──────────────────────────────
 
 class _HeroSection extends StatelessWidget {
   final bool isMobile;
@@ -44,7 +43,7 @@ class _HeroSection extends StatelessWidget {
       color: const Color(0xFF0D0D12),
       child: Stack(
         children: [
-          // Central radial glow from below
+        
           Positioned(
             bottom: -120,
             left: 0,
@@ -64,7 +63,7 @@ class _HeroSection extends StatelessWidget {
               ),
             ),
           ),
-          // Top-right subtle glow
+        
           Positioned(
             top: 0,
             right: 0,
@@ -90,7 +89,7 @@ class _HeroSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Eyebrow badge
+                
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 8),
@@ -128,7 +127,7 @@ class _HeroSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Headline
+                
                 Column(
                   children: [
                     Text(
@@ -164,7 +163,7 @@ class _HeroSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // Subheadline
+                
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 520),
                   child: Text(
@@ -180,7 +179,7 @@ class _HeroSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
 
-                // CTAs
+                
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 14,
@@ -261,7 +260,7 @@ class _HeroSection extends StatelessWidget {
   }
 }
 
-// ────────────────────────── STATS ──────────────────────────────
+
 
 class _StatsRow extends StatelessWidget {
   final bool isMobile;
@@ -359,7 +358,7 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-// ────────────────────────── FEATURES ──────────────────────────────
+
 
 class _FeaturesSection extends StatelessWidget {
   final bool isMobile;
@@ -375,7 +374,7 @@ class _FeaturesSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Section label
+         
           Text(
             "FEATURES",
             style: GoogleFonts.poppins(
@@ -387,7 +386,7 @@ class _FeaturesSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Heading with gradient
+          
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: Column(
@@ -484,7 +483,7 @@ class _FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Gradient border wrapper
+    
     return Container(
       width: 320,
       decoration: BoxDecoration(
@@ -549,7 +548,7 @@ class _FeatureCard extends StatelessWidget {
   }
 }
 
-// ────────────────────────── FOOTER ──────────────────────────────
+
 
 class _Footer extends StatelessWidget {
   final bool isMobile;

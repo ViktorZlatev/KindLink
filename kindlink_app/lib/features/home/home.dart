@@ -10,11 +10,10 @@ import 'package:kindlink/features/widgets/message.dart';
 // map + popups
 import 'map/map_style.dart';
 import 'map/map_functions.dart';
-import 'popups/popup.dart';
+import 'popups/emergency_popup.dart';
 import 'popups/volunteer_popup.dart';
 import 'popups/location.dart';
 import 'popups/help_popup.dart';
-import 'user_location.dart';
 import 'package:kindlink/features/auth/pn_service.dart';
 
 // features
@@ -183,10 +182,6 @@ class _HomePageState extends State<Home> {
               mapFunctions.startVolunteerLocationUpdates(
                 onError: (e) => showTopMessage(context, e),
               );
-            } else {
-              await LocationService.saveUserLocationOnce(
-                onError: (e) => showTopMessage(context, e),
-              );
             }
           },
           onDeny: () {
@@ -295,7 +290,7 @@ class _HomePageState extends State<Home> {
       },
     );
   }
-
+  //survey
   void _fillSurvey() {
     showSurvey(
       context,
@@ -318,7 +313,7 @@ class _HomePageState extends State<Home> {
       },
     );
   }
-
+  // resume
   void _requestHelp() {
     if (_surveyData == null) {
       showTopMessage(context, "No survey data found.");
@@ -344,7 +339,7 @@ class _HomePageState extends State<Home> {
       },
     );
   }
-
+  // volunteer
   void _becomeVolunteer() {
     if (_isVolunteer) {
       showTopMessage(context, "You are already an approved volunteer.");

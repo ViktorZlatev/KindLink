@@ -21,7 +21,6 @@ class PushNotificationService {
       await _saveToken(user.uid, token);
     }
 
-    // Register the refresh listener only once for the app's lifetime
     if (!_listenerRegistered) {
       _listenerRegistered = true;
       FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {

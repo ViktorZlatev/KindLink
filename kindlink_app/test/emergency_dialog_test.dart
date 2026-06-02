@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kindlink/features/home/popups/popup.dart';
+import 'package:kindlink/features/home/popups/emergency_popup.dart';
 
 void main() {
   testWidgets(

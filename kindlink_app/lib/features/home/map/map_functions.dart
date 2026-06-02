@@ -35,8 +35,6 @@ class MapFunctions {
       final bytes = await consolidateHttpClientResponseBytes(res);
       client.close();
 
-      // Render at physical pixels (displaySize * dpr) so the marker is always
-      // exactly displaySize logical pixels on every screen density.
       const double displaySize = 56;
       final double dpr =
           ui.PlatformDispatcher.instance.implicitView?.devicePixelRatio ?? 2.0;
@@ -247,7 +245,6 @@ class MapFunctions {
 
       final results = await Future.wait(futures);
 
-      // Discard result if a newer snapshot has already arrived
       if (generation != _listenerGeneration) return;
 
       final Map<String, Marker> markers = {};

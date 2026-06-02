@@ -18,8 +18,6 @@ class ActiveHelpRequestListener {
 
     _subscription?.cancel();
 
-    // Use a single-field equality filter based on role to avoid
-    // composite index requirements from Filter.or() + whereIn.
     final field = isVolunteer ? "acceptedVolunteerId" : "userId";
 
     _subscription = FirebaseFirestore.instance

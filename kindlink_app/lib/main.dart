@@ -18,7 +18,7 @@ import 'package:kindlink/features/auth/sign_up.dart';
 import 'package:kindlink/features/home/home.dart';
 import 'package:kindlink/features/admin/admin_home.dart';
 
-// Must be a top-level function — called by FCM when the app is in the background or killed
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -30,7 +30,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Register before runApp so it is active for the entire app lifetime
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (!kIsWeb) {

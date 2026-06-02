@@ -59,7 +59,7 @@ Future<void> showAcceptedPopupUser(
               mainAxisSize: MainAxisSize.min,
               children: [
 
-                // Header
+                
                 CircleAvatar(
                   radius: 42,
                   backgroundColor: const Color(0xFF6C63FF).withValues(alpha: 0.12),
@@ -96,7 +96,7 @@ Future<void> showAcceptedPopupUser(
 
                 const SizedBox(height: 20),
 
-                // Divider
+                
                 Container(
                   width: 48,
                   height: 3,
@@ -108,7 +108,7 @@ Future<void> showAcceptedPopupUser(
 
                 const SizedBox(height: 20),
 
-                // Details card
+                
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(18),
@@ -151,7 +151,7 @@ Future<void> showAcceptedPopupUser(
 
                 const SizedBox(height: 24),
 
-                // Buttons
+                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
