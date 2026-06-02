@@ -158,6 +158,17 @@ class MapFunctions {
 
     await _liveLocationStream?.cancel();
 
+    final initialPos = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
+      "location": {
+        "lat": initialPos.latitude,
+        "lng": initialPos.longitude,
+        "updatedAt": FieldValue.serverTimestamp(),
+      }
+    }, SetOptions(merge: true));
+
     _liveLocationStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,

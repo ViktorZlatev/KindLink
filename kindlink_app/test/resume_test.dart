@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kindlink/features/home/resume.dart';
+import 'package:kindlink/features/home/forms/resume.dart';
 
 void main() {
   testWidgets('Health resume dialog renders and allows editing',

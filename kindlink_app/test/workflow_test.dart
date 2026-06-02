@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kindlink/features/home/popups/popup.dart';
 import 'package:kindlink/features/home/popups/help_popup.dart';
-import 'package:kindlink/features/home/resume.dart';
-import 'package:kindlink/features/home/survey.dart';
-import 'package:kindlink/features/home/volunteer.dart';
+import 'package:kindlink/features/home/forms/resume.dart';
+import 'package:kindlink/features/home/forms/survey.dart';
+import 'package:kindlink/features/home/forms/volunteer.dart';
 
 Widget _app(void Function(BuildContext) action) => MaterialApp(
       home: Builder(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kindlink/features/home/survey.dart';
+import 'package:kindlink/features/home/forms/survey.dart';
 
 void main() {
   testWidgets('Survey dialog renders all questions',
